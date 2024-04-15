@@ -128,7 +128,7 @@ input{
   }
     @media(width < 700px){
         .container-fluid{
-            height: 80vh;
+            height: 100vh;
             overflow: scroll;
         }
         table thead th, table tbody td{
