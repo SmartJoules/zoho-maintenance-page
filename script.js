@@ -83,12 +83,11 @@ ZOHO.CREATOR.init()
                         const response_options = recordArr[i].Field_Type.display_value;
                         const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number") ? num_input : (response_options == "Text") ? text_input : "";
                         tr_data = tr_data + resp_type;
-                        tr_data += `<td><div class='d-flex border rounded p-2 gap-3 justify-content-between' id='file-upload' style='max-width: 100px;'>
-                        <label for='img${i}' class='cursor-pointer'><i class="bi bi-image fs-6"></i></label>
-                        <label for='img-capture${i}' class='cursor-pointer'><i class="bi bi-camera-fill fs-6"></i></label>
-                        <input type='file' class='cursor-pointer d-none' id='img-capture${i}' capture="environment" style='border: none !important;' accept='image/*'>
-                        <input type='file' class='cursor-pointer d-none' id='img${i}' style='border: none !important;' accept='image/*'>
-                        <div class='cursor-pointer' id='clear-file${i}'><i class="bi bi-x"></i></div></div></td>`;
+                        tr_data += `<td><div class="image-field border border-secondary rounded d-flex justify-content-around align-items-center">
+                        <div class="upload text-center cursor-pointer"><label for="img${i}" class="cursor-pointer"><i class="bi bi-image"></i></label><input type="file" id="img${i}" accept="image/*" class="d-none"></div>
+                        <div class="capture h-100 text-center cursor-pointer"><label for="img-capture${i}" class="cursor-pointer"><i class="bi bi-camera-fill"></i></label><input type="file" id="img-capture${i}" accept="image/*" capture="environment" class="d-none"></div>
+                        <div class="capture h-100 text-center cursor-pointer"><label class="cursor-pointer h-100" id="clear-file${i}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
+                    </div></td>`;
                         tr_data += `<td><input type='checkbox' id='flag${i}' ${recordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
                         tr_data += `<td><input type='text' id='remark${i}' class='form-control'></td>`;
                         const fileUrl = recordArr[i].Image;
@@ -100,7 +99,9 @@ ZOHO.CREATOR.init()
                         const tbody = document.querySelector("#t-body");
                         tbody.appendChild(tr);
                         const img_obj = document.querySelector(`#img${i}`);
+                        const img_capture_obj = document.querySelector(`#img-capture${i}`);
                         const img_tag = document.getElementsByClassName("img-tag")[i];
+
                         document.querySelector(`#clear-file${i}`).addEventListener("click", function () {
                             img_obj.value = '';
                             img_tag.src = '';
@@ -110,9 +111,22 @@ ZOHO.CREATOR.init()
                             if (file) {
                                 const image_url = URL.createObjectURL(file);
                                 img_tag.src = image_url;
+                                img_capture_obj.value = '';
+                                img_capture_obj.src = '';
                             }
 
                         })
+                        img_capture_obj.addEventListener("change", function () {
+                            const file = img_capture_obj.files[0];
+                            if (file) {
+                                const image_url = URL.createObjectURL(file);
+                                img_tag.src = image_url;
+                                img_obj.value = '';
+                                img_obj.src = '';
+                            }
+
+                        })
+
                     }
                 }
 
@@ -303,9 +317,10 @@ ZOHO.CREATOR.init()
                     const resp = response.lastChild;
                     if (resp.value && resp.value != "null" && resp.value != undefined && resp.value != null) {
                         const ret_img = document.querySelector(`#img${i}`);
-                        if (ret_img) {
+                        const ret_capture_img = document.querySelector(`#img-capture${i}`);
+                        if (ret_img || ret_capture_img) {
                             const task_id = td[9].textContent;
-                            const resp_img_value = ret_img.files[0];
+                            const resp_img_value = ret_img.files[0]?ret_img.files[0]:ret_capture_img.files[0]?ret_capture_img.files[0]:"";
                             if (resp_img_value) {
                                 const resp_img = resp_img_value;
                                 if (resp_img instanceof Blob) {

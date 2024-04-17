@@ -17,6 +17,15 @@ button{
 .cursor-pointer{
     cursor: pointer;
 }
+.image-field{
+    width: 100px;
+}
+.image-field label:nth-child(1){
+    font-size: 20px;
+}
+/* .image-field label i:nth-child(3){
+    font-size: 12px;
+}  */
 input{
     border: 1px solid rgb(135, 134, 134) !important;
 }
@@ -144,9 +153,6 @@ input{
         input[type="number"] {
            min-width: 100px !important;
            max-width: 100px !important;
-        }
-        #file-upload{
-            max-width: 80px !important;
         }
         .img-tag{
             max-width: 50px;
