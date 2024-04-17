@@ -91,7 +91,7 @@ ZOHO.CREATOR.init()
                         tr_data += `<td><input type='checkbox' id='flag${i}' ${recordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
                         tr_data += `<td><input type='text' id='remark${i}' class='form-control'></td>`;
                         const fileUrl = recordArr[i].Image;
-                        const img_url = fileUrl ? `https://creator.zoho.in/publishapi/v2/smartjoules/smart-joules-app/report/All_Maintenance_Scheduler_Task_List_Records/${recordArr[i].ID}/Image/download?privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
+                        const img_url = fileUrl ? `https://creatorapp.zohopublic.in/publishapi/v2/smartjoules/smart-joules-app/report/All_Maintenance_Scheduler_Task_List_Records/${recordArr[i].ID}/Image/download?privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
                         tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
                         tr_data += `<td class='d-none'>${recordArr[i].ID}</td>`;
                         tr_data += `<td class='d-none'>${recordArr[i].Maintenance_ID}</td>`
@@ -113,6 +113,7 @@ ZOHO.CREATOR.init()
                                 img_tag.src = image_url;
                                 img_capture_obj.value = '';
                                 img_capture_obj.src = '';
+                                
                             }
 
                         })
@@ -321,6 +322,7 @@ ZOHO.CREATOR.init()
                         if (ret_img || ret_capture_img) {
                             const task_id = td[9].textContent;
                             const resp_img_value = ret_img.files[0]?ret_img.files[0]:ret_capture_img.files[0]?ret_capture_img.files[0]:"";
+                            console.log(ret_img.files[0],ret_capture_img.files[0]);
                             if (resp_img_value) {
                                 const resp_img = resp_img_value;
                                 if (resp_img instanceof Blob) {
@@ -487,9 +489,9 @@ ZOHO.CREATOR.init()
             try {
                  await loaderStart();
                 const add_record = await add_records();
-                console.log(add_record);
+                console.log("Records Added", add_record);
                 const add_image = await addImage();
-                console.log(add_image);
+                console.log("Images Added" ,add_image);
                 const added_user = await submittedUser();
                 console.log(added_user);
                 const count_records = await count();
