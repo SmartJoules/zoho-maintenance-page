@@ -83,9 +83,9 @@ ZOHO.CREATOR.init()
                         const response_options = recordArr[i].Field_Type.display_value;
                         const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number") ? num_input : (response_options == "Text") ? text_input : "";
                         tr_data = tr_data + resp_type;
-                        tr_data += `<td><div class='d-flex border rounded p-2 gap-2 justify-content-between' id='file-upload' style='max-width: 100px;'>
-                        <label for='img${i}' class='cursor-pointer'><i class="bi bi-image"></i></label>
-                        <label for='img-capture${i}' class='cursor-pointer'><i class="bi bi-camera-fill"></i></label>
+                        tr_data += `<td><div class='d-flex border rounded p-2 gap-3 justify-content-between' id='file-upload' style='max-width: 100px;'>
+                        <label for='img${i}' class='cursor-pointer'><i class="bi bi-image fs-6"></i></label>
+                        <label for='img-capture${i}' class='cursor-pointer'><i class="bi bi-camera-fill fs-6"></i></label>
                         <input type='file' class='cursor-pointer d-none' id='img-capture${i}' capture="environment" style='border: none !important;' accept='image/*'>
                         <input type='file' class='cursor-pointer d-none' id='img${i}' style='border: none !important;' accept='image/*'>
                         <div class='cursor-pointer' id='clear-file${i}'><i class="bi bi-x"></i></div></div></td>`;
