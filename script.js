@@ -440,17 +440,16 @@ ZOHO.CREATOR.init()
 
         const switchCamera = (video) => {
             currentCamera = (currentCamera === 'user') ? 'environment' :(currentCamera === "environment") ?'user':"";
-
-            if(currentCamera == user){
-                video.style.transform = "rotatey(180deg)";
+            stopCamera();
+            if(currentCamera == "user"){
+                video.style.transform = "rotateY(180deg)";
             }
             else{
-                video.style.transform = "rotatey(0deg)";
+                video.style.transform = "rotateY(0deg)";
             }
-            stopCamera();
             navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode: { exact: currentCamera }
+                    facingMode: currentCamera
                 }
             })
                 .then(function (cameraStream) {
