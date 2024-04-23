@@ -17,6 +17,11 @@ button{
 .cursor-pointer{
     cursor: pointer;
 }
+video{
+    width: 320px;
+    height: 240px;
+    transform: rotatey(180deg);
+}
 .image-field{
     width: 100px;
 }
