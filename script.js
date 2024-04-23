@@ -372,7 +372,7 @@ ZOHO.CREATOR.init()
         };
 
 
-        let currentCamera = "environment";
+        let currentCamera = "user";
         let stream;
         let metadataLoaded = false;
 
@@ -435,7 +435,7 @@ ZOHO.CREATOR.init()
 
 
         const switchCamera = (video) => {
-            currentCamera = currentCamera === 'user' ? 'environment' : 'user';
+            currentCamera = (currentCamera === 'user') ? 'environment' :(currentCamera === "environment") ?'user':"";
             stopCamera();
             navigator.mediaDevices.getUserMedia({
                 video: {
