@@ -372,7 +372,7 @@ ZOHO.CREATOR.init()
         };
 
 
-        let currentCamera = "user";
+        let currentCamera = "environment";
         let stream;
         let metadataLoaded = false;
 
@@ -385,7 +385,9 @@ ZOHO.CREATOR.init()
                 const video = video_obj.querySelector("video");
                 const canvas = video_obj.querySelector("canvas");
 
-                navigator.mediaDevices.getUserMedia({ video: true })
+                navigator.mediaDevices.getUserMedia({ video: {
+                    facingMode: 'environment'
+                } })
                     .then((cameraStream) => {
                         video.srcObject = cameraStream;
                         stream = cameraStream;
