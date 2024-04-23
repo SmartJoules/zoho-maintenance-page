@@ -385,9 +385,11 @@ ZOHO.CREATOR.init()
                 const video = video_obj.querySelector("video");
                 const canvas = video_obj.querySelector("canvas");
 
-                navigator.mediaDevices.getUserMedia({ video: {
-                    facingMode: 'environment'
-                } })
+                navigator.mediaDevices.getUserMedia({
+                     video: {
+                    facingMode: currentCamera
+                }
+             })
                     .then((cameraStream) => {
                         video.srcObject = cameraStream;
                         stream = cameraStream;
