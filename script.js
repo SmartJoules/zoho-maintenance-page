@@ -102,7 +102,9 @@ ZOHO.CREATOR.init()
                                <canvas id="canvas${i}" class="d-none"></canvas>
                                <input type="file" class="d-none" id="img-capture${i}">
                                  <button type="button" class="btn btn-secondary cam-close" data-bs-dismiss="modal">Close</button>
+                                 <button type="button" class="btn btn-secondary switch">Switch Camera</button>
                                  <button type="button" id="startbutton${i}" data-bs-dismiss="modal" class="btn btn-primary capture">Capture</button>
+
                                </div>
                              </div>
                            </div>
@@ -376,6 +378,7 @@ ZOHO.CREATOR.init()
 
         document.addEventListener("click", (event) => {
             const target_class_list = Array.from(event.target.classList);
+            const target_obj = event.target.parentElement;
             if (target_class_list.includes("cam-open")) {
                 const video_id = event.target.parentElement.getAttribute("data-bs-target");
                 const video_obj = document.querySelector(video_id);
@@ -398,10 +401,14 @@ ZOHO.CREATOR.init()
             } else if (target_class_list.includes("cam-close")) {
                 stopCamera();
             } else if (target_class_list.includes("capture")) {
-                const target_obj = event.target.parentElement;
+               
                 const canvas = target_obj.querySelector("canvas");
                 const video_element = target_obj.parentElement.querySelector("video");
                 captureImage(video_element, canvas);
+            }
+            else if (target_class_list.includes("switch")) {
+                const video_element = target_obj.parentElement.querySelector("video");
+                switchCamera(video_element);
             }
         });
 
@@ -424,28 +431,26 @@ ZOHO.CREATOR.init()
             const image_field = document.querySelector(`#img-capture${index_no}`);
             image_field.files = dataTransfer.files;
         };
-        
-        
 
-        const switchCamera = () => {
+
+
+        const switchCamera = (video) => {
             currentCamera = currentCamera === 'user' ? 'environment' : 'user';
-
             stopCamera();
-
             navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: { exact: currentCamera }
                 }
             })
                 .then(function (cameraStream) {
-                    const videoElement = document.getElementById('videoElement');
-                    videoElement.srcObject = cameraStream;
+                    video.srcObject = cameraStream;
                     stream = cameraStream;
                 })
                 .catch(function (err) {
                     console.error('Error accessing camera: ' + err);
                 });
         };
+
         const dataURItoBlob = (dataURI) => {
             const byteString = atob(dataURI.split(',')[1]);
             const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
