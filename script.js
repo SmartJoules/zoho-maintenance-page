@@ -462,12 +462,6 @@ ZOHO.CREATOR.init()
                 });
         };
         
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-        }
-        
 
         const dataURItoBlob = (dataURI) => {
             const byteString = atob(dataURI.split(',')[1]);
