@@ -139,7 +139,20 @@ input{
     58%,
     100% {transform: rotate(calc(var(--s,1)*1turn))}
   }
-    @media(width < 700px){
+  @media only screen and (orientation: landscape) {
+    /* Apply rotation for landscape orientation */
+    video {
+        transform: rotate(90deg);
+    }
+}
+
+@media only screen and (orientation: portrait) {
+    /* Reset rotation for portrait orientation */
+    video {
+        transform: rotate(0deg);
+    }
+}
+    @media(width < 724px){
         .container-fluid{
             height: 100vh;
             overflow: scroll;

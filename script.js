@@ -95,7 +95,7 @@ ZOHO.CREATOR.init()
                                </div>
                                <div class="modal-body">
                                <div class="capture-camera">
-                           <video id="video${i}" class="vid" index="${i}" autoplay>Video stream not available.</video>
+                           <video id="video${i}" class="vid" index="${i}" playsinline autoplay>Video stream not available.</video>
                          </div>
                                </div>
                                <div class="modal-footer">
@@ -104,7 +104,6 @@ ZOHO.CREATOR.init()
                                  <button type="button" class="btn btn-secondary cam-close" data-bs-dismiss="modal">Close</button>
                                  <button type="button" class="btn btn-secondary switch">Switch Camera</button>
                                  <button type="button" id="startbutton${i}" data-bs-dismiss="modal" class="btn btn-primary capture">Capture</button>
-
                                </div>
                              </div>
                            </div>
@@ -130,6 +129,7 @@ ZOHO.CREATOR.init()
                         img_obj.value = '';
                         img_tag.src = '';
                     })
+
                     img_obj.addEventListener("change", function () {
                         const file = img_obj.files[0];
                         if (file) {
@@ -366,11 +366,9 @@ ZOHO.CREATOR.init()
                     }
 
                 }
-
             })
             return Promise.all(promises)
         };
-
 
         let currentCamera = "environment";
         let stream;
@@ -402,6 +400,7 @@ ZOHO.CREATOR.init()
                     .catch((err) => {
                         console.error('Error accessing camera: ' + err);
                     });
+                    video.setAttribute('playsinline', '');
             } else if (target_class_list.includes("cam-close")) {
                 stopCamera();
             } else if (target_class_list.includes("capture")) {
@@ -439,27 +438,36 @@ ZOHO.CREATOR.init()
 
 
         const switchCamera = (video) => {
-            currentCamera = (currentCamera === 'user') ? 'environment' :(currentCamera === "environment") ?'user':"";
+            currentCamera = (currentCamera === 'user') ? 'environment' : (currentCamera === "environment") ? 'user' : "";
             stopCamera();
-            if(currentCamera == "user"){
+        
+            if (currentCamera == "user") {
                 video.style.transform = "rotateY(180deg)";
-            }
-            else{
+            } else {
                 video.style.transform = "rotateY(0deg)";
             }
+        
             navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: currentCamera
-                }
-            })
-                .then(function (cameraStream) {
+                    video: {
+                        facingMode: currentCamera
+                    }
+                })
+                .then(function(cameraStream) {
                     video.srcObject = cameraStream;
                     stream = cameraStream;
+                    video.setAttribute('playsinline', '');
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     console.error('Error accessing camera: ' + err);
                 });
         };
+        
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        }
+        
 
         const dataURItoBlob = (dataURI) => {
             const byteString = atob(dataURI.split(',')[1]);
