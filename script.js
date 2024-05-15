@@ -118,6 +118,11 @@ ZOHO.CREATOR.init()
                     tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
                     tr_data += `<td class='d-none'>${recordArr[i].ID}</td>`;
                     tr_data += `<td class='d-none'>${recordArr[i].Maintenance_ID}</td>`
+                     const audio_file = recordArr[i].Audio? `https://creatorapp.zohopublic.in${recordArr[i].Audio}`.replace("api","publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : "";
+                    tr_data += `<td>
+                    <audio id="audioPlayer${i}" controls>
+                    <source src="${audio_file}" type="audio/mpeg">
+                  </audio></td>`
                     tr.innerHTML = tr_data;
                     const tbody = document.querySelector("#t-body");
                     tbody.appendChild(tr);
@@ -462,6 +467,12 @@ ZOHO.CREATOR.init()
                 });
         };
         
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        }
+        
 
         const dataURItoBlob = (dataURI) => {
             const byteString = atob(dataURI.split(',')[1]);
@@ -472,12 +483,6 @@ ZOHO.CREATOR.init()
                 ia[i] = byteString.charCodeAt(i);
             }
             return new Blob([ab], { type: mimeString });
-        };
-        const stopCamera = () => {
-            if (stream) {
-                const tracks = stream.getTracks();
-                tracks.forEach(track => track.stop());
-            }
         };
 
 
