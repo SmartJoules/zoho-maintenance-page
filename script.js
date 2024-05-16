@@ -37,7 +37,13 @@ ZOHO.CREATOR.init()
                 pageSize: 200,
             }
             const response = await ZOHO.CREATOR.API.getAllRecords(configuration);
-            const recordArr = response.data;
+            let recordArr = response.data;
+            const maintenanceArr = recordArr.reduce((acc, curr) => {
+                if (!acc.includes(curr.Maintenance_ID)) {
+                    acc.push(curr.Maintenance_ID);
+                }
+                return acc;
+            }, [])
             recordArr.sort((a, b) => parseFloat(a["S_No"]) - parseFloat(b["S_No"]));
             const area_label = document.querySelector(`#area-name`);
             if (area) {
@@ -60,103 +66,143 @@ ZOHO.CREATOR.init()
 
 
             const area_list = [];
-            for (let i = 0; i < recordArr.length; i++) {
-                area_list.push(recordArr[i].Area);
-                if (recordArr[i].Task_Name != "Measure Air Flow") {
-                    const s_no = i + 1;
-                    const tr = document.createElement("tr");
-                    tr.className = `table-row`;
-                    let tr_data = `<td>${s_no}</td>
-                        <td class='text-nowrap'>${recordArr[i].Date_field.substring(0, 6)}</td>
-                        <td class='text-start' style='min-width: 200px;'>${recordArr[i].Task_Name}</td>`;
-                    tr_data += `<td class='d-none'>${recordArr[i].Field_Type.display_value}</td>`
-                    const select_tag = `<td id='resp-opt${i}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${i}'>
-                        <option value=null ${(recordArr[i].Response_Option.display_value || recordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>
-                        <option value='Yes' ${(recordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (recordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>
-                        <option value='No' ${(recordArr[i].Response_Option.display_value === 'No') ? 'selected' : (recordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>
-                        <option value='Done' ${(recordArr[i].Response_Option.display_value === 'Done' || recordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>
-                        <option value='Not Done' ${(recordArr[i].Response_Option.display_value == 'Not Done' || recordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>
-                        </select></td>`;
-                    const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${recordArr[i].Response_Amount}' class='form-control'></td>`;
-                    const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${recordArr[i].Response_Text}' class='form-control'></td>`;
-                    const response_options = recordArr[i].Field_Type.display_value;
-                    const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number") ? num_input : (response_options == "Text") ? text_input : "";
-                    tr_data = tr_data + resp_type;
-                    tr_data += `<td><div class="image-field border border-secondary rounded d-flex justify-content-around align-items-center">
-                        <div class="upload text-center cursor-pointer"><label for="img${i}" class="cursor-pointer"><i class="bi bi-image"></i></label><input type="file" id="img${i}" accept="image/*" class="d-none"></div>
-                        <div class="capture h-100 text-center cursor-pointer">
-                        <label data-bs-toggle="modal" data-bs-target="#capture${i}" class="cursor-pointer"><i class="bi bi-camera-fill cam-open"></i></label>
-                        <div class="modal fade" id="capture${i}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                           <div class="modal-dialog">
-                             <div class="modal-content">
-                               <div class="modal-header">
-                                 <h1 class="modal-title fs-5" id="exampleModalLabel">Camera</h1>
-                                 <button type="button" class="btn-close cam-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                               </div>
-                               <div class="modal-body">
-                               <div class="capture-camera">
-                           <video id="video${i}" class="vid" index="${i}" playsinline autoplay>Video stream not available.</video>
-                         </div>
-                               </div>
-                               <div class="modal-footer">
-                               <canvas id="canvas${i}" class="d-none"></canvas>
-                               <input type="file" class="d-none" id="img-capture${i}">
-                                 <button type="button" class="btn btn-secondary cam-close" data-bs-dismiss="modal">Close</button>
-                                 <button type="button" class="btn btn-secondary switch">Switch Camera</button>
-                                 <button type="button" id="startbutton${i}" data-bs-dismiss="modal" class="btn btn-primary capture">Capture</button>
+            for (let j = 0; j < maintenanceArr.length; j++) {
+                mConfig = {
+                    appName: "smart-joules-app",
+                    reportName: "All_Maintenance_Scheduler_Report",
+                    id: maintenanceArr[j]
+                }
+                const m_obj = await ZOHO.CREATOR.API.getRecordById(mConfig);
+                const m_tr = document.createElement("tr");
+                m_tr.innerHTML = `<td colspan="11" class="bg-light text-start fw-bold">${m_obj.data.Title}</td>`;
+                document.querySelector("#t-body").appendChild(m_tr);
+                recordArr = recordArr.filter(rec => rec.Maintenance_ID == maintenanceArr[j]);
+                for (let i = 0; i < recordArr.length; i++) {
+                    area_list.push(recordArr[i].Area);
+                    if (recordArr[i].Task_Name != "Measure Air Flow") {
+
+                        taskConfig = {
+                            appName: "smart-joules-app",
+                            reportName: "All_Tasks",
+                            criteria: `Task_Name == "${recordArr[i].Task_Name}"`
+                        }
+                        try{
+                            const task_resp = await ZOHO.CREATOR.API.getAllRecords(taskConfig);
+                            console.log(task_resp);
+                        }
+                        catch
+                        {
+
+                        }
+                        
+                        const s_no = i + 1;
+                        const tr = document.createElement("tr");
+                        tr.className = `table-row`;
+                        const audio_file = recordArr[i].Audio ? `https://creatorapp.zohopublic.in${recordArr[i].Audio}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : "";
+                        let tr_data = `<td>${s_no}
+                        <audio class="d-none" id="audioPlayer${i}" controls>
+                            <source src="${audio_file}" type="audio/mpeg">
+                          </audio>
+                        </td>
+                            <td class='text-nowrap'>${recordArr[i].Date_field.substring(0, 6)}</td>
+                            <td class='text-start' style='min-width: 200px;'>${recordArr[i].Task_Name} ${recordArr[i].Audio ? `<span class="fs-6 cursor-pointer" id="audio-${i}"><i class="bi bi-volume-up-fill"></i></span>` :""}</td>`;
+                            
+                        tr_data += `<td class='d-none'>${recordArr[i].Field_Type.display_value}</td>`;
+                        const select_tag = `<td id='resp-opt${i}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${i}'>
+                            <option value=null ${(recordArr[i].Response_Option.display_value || recordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>
+                            <option value='Yes' ${(recordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (recordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>
+                            <option value='No' ${(recordArr[i].Response_Option.display_value === 'No') ? 'selected' : (recordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>
+                            <option value='Done' ${(recordArr[i].Response_Option.display_value === 'Done' || recordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>
+                            <option value='Not Done' ${(recordArr[i].Response_Option.display_value == 'Not Done' || recordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>
+                            </select></td>`;
+                        const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${recordArr[i].Response_Amount}' class='form-control'></td>`;
+                        const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${recordArr[i].Response_Text}' class='form-control'></td>`;
+                        const response_options = recordArr[i].Field_Type.display_value;
+                        const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number") ? num_input : (response_options == "Text") ? text_input : "";
+                        tr_data = tr_data + resp_type;
+                        tr_data += `<td><div class="image-field border border-secondary rounded d-flex justify-content-around align-items-center">
+                            <div class="upload text-center cursor-pointer"><label for="img${i}" class="cursor-pointer"><i class="bi bi-image"></i></label><input type="file" id="img${i}" accept="image/*" class="d-none"></div>
+                            <div class="capture h-100 text-center cursor-pointer">
+                            <label data-bs-toggle="modal" data-bs-target="#capture${i}" class="cursor-pointer"><i class="bi bi-camera-fill cam-open"></i></label>
+                            <div class="modal fade" id="capture${i}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                               <div class="modal-dialog">
+                                 <div class="modal-content">
+                                   <div class="modal-header">
+                                     <h1 class="modal-title fs-5" id="exampleModalLabel">Camera</h1>
+                                     <button type="button" class="btn-close cam-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                   </div>
+                                   <div class="modal-body">
+                                   <div class="capture-camera">
+                               <video id="video${i}" class="vid" index="${i}" playsinline autoplay>Video stream not available.</video>
+                             </div>
+                                   </div>
+                                   <div class="modal-footer">
+                                   <canvas id="canvas${i}" class="d-none"></canvas>
+                                   <input type="file" class="d-none" id="img-capture${i}">
+                                     <button type="button" class="btn btn-secondary cam-close" data-bs-dismiss="modal">Close</button>
+                                     <button type="button" class="btn btn-secondary switch">Switch Camera</button>
+                                     <button type="button" id="startbutton${i}" data-bs-dismiss="modal" class="btn btn-primary capture">Capture</button>
+                                   </div>
+                                 </div>
                                </div>
                              </div>
-                           </div>
-                         </div>
-                        </div>
-                        <div class="capture h-100 text-center cursor-pointer"><label class="cursor-pointer h-100" id="clear-file${i}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
-                    </div></td>`;
-                    tr_data += `<td><input type='checkbox' id='flag${i}' ${recordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
-                    tr_data += `<td><input type='text' id='remark${i}' class='form-control'></td>`;
-                    const fileUrl = recordArr[i].Image;
-                    const img_url = fileUrl ? `https://creatorapp.zohopublic.in/publishapi/v2/smartjoules/smart-joules-app/report/All_Maintenance_Scheduler_Task_List_Records/${recordArr[i].ID}/Image/download?privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
-                    tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
-                    tr_data += `<td class='d-none'>${recordArr[i].ID}</td>`;
-                    tr_data += `<td class='d-none'>${recordArr[i].Maintenance_ID}</td>`
-                     const audio_file = recordArr[i].Audio? `https://creatorapp.zohopublic.in${recordArr[i].Audio}`.replace("api","publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : "";
-                    tr_data += `<td>
-                    <audio id="audioPlayer${i}" controls>
-                    <source src="${audio_file}" type="audio/mpeg">
-                  </audio></td>`
-                    tr.innerHTML = tr_data;
-                    const tbody = document.querySelector("#t-body");
-                    tbody.appendChild(tr);
-                    const img_obj = document.querySelector(`#img${i}`);
-                    const img_capture_obj = document.querySelector(`#img-capture${i}`);
-                    const img_tag = document.getElementsByClassName("img-tag")[i];
+                            </div>
+                            <div class="capture h-100 text-center cursor-pointer"><label class="cursor-pointer h-100" id="clear-file${i}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
+                        </div></td>`;
+                        tr_data += `<td><input type='checkbox' id='flag${i}' ${recordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
+                        tr_data += `<td><input type='text' id='remark${i}' class='form-control'></td>`;
+                        const fileUrl = recordArr[i].Image;
+                        const img_url = fileUrl ? `https://creatorapp.zohopublic.in/publishapi/v2/smartjoules/smart-joules-app/report/All_Maintenance_Scheduler_Task_List_Records/${recordArr[i].ID}/Image/download?privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
+                        tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
+                        tr_data += `<td class='d-none'>${recordArr[i].ID}</td>`;
+                        tr_data += `<td class='d-none'>${recordArr[i].Maintenance_ID}</td>`
+                        tr.innerHTML = tr_data;
+                        const tbody = document.querySelector("#t-body");
+                        tbody.appendChild(tr);
+                        const img_obj = document.querySelector(`#img${i}`);
+                        const img_capture_obj = document.querySelector(`#img-capture${i}`);
+                        const img_tag = document.getElementsByClassName("img-tag")[i];
+                        if(recordArr[i].Audio)
+                            {
+                                document.querySelector(`#audio-${i}`).addEventListener("click",()=>{
+                                    const audio = document.querySelector(`#audioPlayer${i}`);
+                                    if (audio.paused) {
+                                        audio.play();
+                                      } else {
+                                        audio.pause();
+                                      }
+                                })
+                            }
 
-                    document.querySelector(`#clear-file${i}`).addEventListener("click", function () {
-                        img_obj.value = '';
-                        img_tag.src = '';
-                    })
-
-                    img_obj.addEventListener("change", function () {
-                        const file = img_obj.files[0];
-                        if (file) {
-                            const image_url = URL.createObjectURL(file);
-                            img_tag.src = image_url;
-                            img_capture_obj.value = '';
-                            img_capture_obj.src = '';
-
-                        }
-                    })
-                    img_capture_obj.addEventListener("change", function () {
-                        const file = img_capture_obj.files[0];
-                        if (file) {
-                            const image_url = URL.createObjectURL(file);
-                            img_tag.src = image_url;
+                        document.querySelector(`#clear-file${i}`).addEventListener("click", function () {
                             img_obj.value = '';
-                            img_obj.src = '';
-                        }
-                    })
-                }
+                            img_tag.src = '';
+                        })
 
+                        img_obj.addEventListener("change", function () {
+                            const file = img_obj.files[0];
+                            if (file) {
+                                const image_url = URL.createObjectURL(file);
+                                img_tag.src = image_url;
+                                img_capture_obj.value = '';
+                                img_capture_obj.src = '';
+
+                            }
+                        })
+                        img_capture_obj.addEventListener("change", function () {
+                            const file = img_capture_obj.files[0];
+                            if (file) {
+                                const image_url = URL.createObjectURL(file);
+                                img_tag.src = image_url;
+                                img_obj.value = '';
+                                img_obj.src = '';
+                            }
+                        })
+                    }
+
+                }
             }
+
             const distictAreaList = [...new Set(area_list)];
             // distictAreaList.forEach(y => {
             //     const drop_li = document.createElement("li");
@@ -389,10 +435,10 @@ ZOHO.CREATOR.init()
                 const canvas = video_obj.querySelector("canvas");
 
                 navigator.mediaDevices.getUserMedia({
-                     video: {
-                    facingMode: currentCamera
-                }
-             })
+                    video: {
+                        facingMode: currentCamera
+                    }
+                })
                     .then((cameraStream) => {
                         video.srcObject = cameraStream;
                         stream = cameraStream;
@@ -405,11 +451,11 @@ ZOHO.CREATOR.init()
                     .catch((err) => {
                         console.error('Error accessing camera: ' + err);
                     });
-                    video.setAttribute('playsinline', '');
+                video.setAttribute('playsinline', '');
             } else if (target_class_list.includes("cam-close")) {
                 stopCamera();
             } else if (target_class_list.includes("capture")) {
-               
+
                 const canvas = target_obj.querySelector("canvas");
                 const video_element = target_obj.parentElement.querySelector("video");
                 captureImage(video_element, canvas);
@@ -445,34 +491,34 @@ ZOHO.CREATOR.init()
         const switchCamera = (video) => {
             currentCamera = (currentCamera === 'user') ? 'environment' : (currentCamera === "environment") ? 'user' : "";
             stopCamera();
-        
+
             if (currentCamera == "user") {
                 video.style.transform = "rotateY(180deg)";
             } else {
                 video.style.transform = "rotateY(0deg)";
             }
-        
+
             navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: currentCamera
-                    }
-                })
-                .then(function(cameraStream) {
+                video: {
+                    facingMode: currentCamera
+                }
+            })
+                .then(function (cameraStream) {
                     video.srcObject = cameraStream;
                     stream = cameraStream;
                     video.setAttribute('playsinline', '');
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.error('Error accessing camera: ' + err);
                 });
         };
-        
+
         function stopCamera() {
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
             }
         }
-        
+
 
         const dataURItoBlob = (dataURI) => {
             const byteString = atob(dataURI.split(',')[1]);
