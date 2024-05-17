@@ -14,7 +14,7 @@ ZOHO.CREATOR.init()
 
         const createTable = async (start_date, end_date, site, area) => {
 
-            let conditional_criteria = `Task_Name != "Measure Air Flow"`;
+            let conditional_criteria = `Task_Name != "Measure Air Flow" && Task_Name != "Expense Inccurred" && Task_Name != "Inventory Consumption"`;
             if (queryParams.maintenance_id) {
                 conditional_criteria += ` && Maintenance_ID == ${maintenance_id}`;
                 conditional_criteria += (start_date) ? ` && Date_field == "${start_date} 00:00:00"` : "";
@@ -79,21 +79,26 @@ ZOHO.CREATOR.init()
                 recordArr = recordArr.filter(rec => rec.Maintenance_ID == maintenanceArr[j]);
                 for (let i = 0; i < recordArr.length; i++) {
                     area_list.push(recordArr[i].Area);
-                    if (recordArr[i].Task_Name != "Measure Air Flow") {
+                    if (recordArr[i].Task_Name != "Measure Air Flow" && recordArr[i].Task_Name != "Expense Inccurred" && recordArr[i].Task_Name != "Inventory Consumption") {
 
-                        taskConfig = {
-                            appName: "smart-joules-app",
-                            reportName: "All_Tasks",
-                            criteria: `Task_Name == "${recordArr[i].Task_Name}"`
-                        }
-                        try{
-                            const task_resp = await ZOHO.CREATOR.API.getAllRecords(taskConfig);
-                            console.log(task_resp);
-                        }
-                        catch
-                        {
-
-                        }
+                        
+                            const taskChoices = async (taskConfig)=>{
+                                taskConfig = {
+                                    appName: "smart-joules-app",
+                                    reportName: "All_Tasks",
+                                    criteria: `Task_Name == "${recordArr[i].Task_Name}"`
+                                }
+                                try{
+                                const task_resp = await ZOHO.CREATOR.API.getAllRecords(taskConfig);
+                                const choices = task_resp.data[0];
+                                return choices.Choices.map(choice => choice.display_value);
+                                }
+                                catch{
+                                    return [];
+                                }
+                            }
+                            const task_choices = await taskChoices();
+                            console.log(task_choices);
                         
                         const s_no = i + 1;
                         const tr = document.createElement("tr");
@@ -108,13 +113,18 @@ ZOHO.CREATOR.init()
                             <td class='text-start' style='min-width: 200px;'>${recordArr[i].Task_Name} ${recordArr[i].Audio ? `<span class="fs-6 cursor-pointer" id="audio-${i}"><i class="bi bi-volume-up-fill"></i></span>` :""}</td>`;
                             
                         tr_data += `<td class='d-none'>${recordArr[i].Field_Type.display_value}</td>`;
-                        const select_tag = `<td id='resp-opt${i}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${i}'>
-                            <option value=null ${(recordArr[i].Response_Option.display_value || recordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>
-                            <option value='Yes' ${(recordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (recordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>
-                            <option value='No' ${(recordArr[i].Response_Option.display_value === 'No') ? 'selected' : (recordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>
-                            <option value='Done' ${(recordArr[i].Response_Option.display_value === 'Done' || recordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>
-                            <option value='Not Done' ${(recordArr[i].Response_Option.display_value == 'Not Done' || recordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>
-                            </select></td>`;
+                        let select_tag = `<td id='resp-opt${i}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${i}'>
+                           <option value=null ${(recordArr[i].Response_Option.display_value || recordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>`;
+                           select_tag += task_choices.includes("Yes") ? `<option value='Yes' ${(recordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (recordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>`: "";
+                           select_tag += task_choices.includes("No") ? `<option value='No' ${(recordArr[i].Response_Option.display_value === 'No') ? 'selected' : (recordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>`:"" ;
+                           select_tag += task_choices.includes("Done") ? `<option value='Done' ${(recordArr[i].Response_Option.display_value === 'Done' || recordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>`:"";
+                           select_tag += task_choices.includes("Not Done") ? `<option value='Not Done' ${(recordArr[i].Response_Option.display_value == 'Not Done' || recordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>`:"";
+                           select_tag += task_choices.includes("Okay") ? `<option value='Not Done' ${(recordArr[i].Response_Option.display_value == 'Okay' || recordArr[i].Response_Option1 === "Okay") ? 'selected' : ''}>Okay</option>`:"";
+                           select_tag += task_choices.includes("Not Okay") ? `<option value='Not Okay' ${(recordArr[i].Response_Option.display_value == 'Not Okay' || recordArr[i].Response_Option1 === "Not Okay") ? 'selected' : ''}>Not Okay</option>`:"";
+                           select_tag += task_choices.includes("Electrical") ? `<option value='Electrical' ${(recordArr[i].Response_Option.display_value == 'Electrical' || recordArr[i].Response_Option1 === "Electrical") ? 'selected' : ''}>Electrical</option>`:"";
+                           select_tag += task_choices.includes("Damage") ? `<option value='Damage' ${(recordArr[i].Response_Option.display_value == 'Damage' || recordArr[i].Response_Option1 === "Damage") ? 'selected' : ''}>Damage</option>`:"";
+                           select_tag += task_choices.includes("Safety") ? `<option value='Safety' ${(recordArr[i].Response_Option.display_value == 'Safety' || recordArr[i].Response_Option1 === "Safety") ? 'selected' : ''}>Safety</option>`:"";
+                           select_tag += `</select></td>`;
                         const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${recordArr[i].Response_Amount}' class='form-control'></td>`;
                         const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${recordArr[i].Response_Text}' class='form-control'></td>`;
                         const response_options = recordArr[i].Field_Type.display_value;
@@ -189,6 +199,7 @@ ZOHO.CREATOR.init()
 
                             }
                         })
+
                         img_capture_obj.addEventListener("change", function () {
                             const file = img_capture_obj.files[0];
                             if (file) {
@@ -348,7 +359,9 @@ ZOHO.CREATOR.init()
                         }
                         const remark_output = document.querySelector("#resp-remark" + i);
                         const multipleResp = (resp) => {
-                            return (resp == "Yes") ? "175578000000850048" : (resp == "No") ? "175578000000850052" : (resp == "Done") ? "175578000000569059" : (resp == "Not Done") ? "175578000000569063" : null;
+                            return (resp == "Yes") ? "175578000000850048" : (resp == "No") ? "175578000000850052" : (resp == "Done") ? "175578000000569059" : (resp == "Not Done") ? "175578000000569063" :
+                             (resp == "Okay") ? "175578000000569051": (resp == "Not Okay") ? "175578000000569055" :(resp == "Electrical") ? "175578000000390011" : (resp == "Damage") ? "175578000000390007":
+                             (resp == "Safety") ? "175578000000390033":"";
                         }
                         formData = {
                             "data": {
