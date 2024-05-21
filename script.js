@@ -73,6 +73,7 @@ ZOHO.CREATOR.init()
                     id: maintenanceArr[j]
                 }
                 const m_obj = await ZOHO.CREATOR.API.getRecordById(mConfig);
+                console.log(m_obj);
                 const m_tr = document.createElement("tr");
                 m_tr.innerHTML = `<td colspan="11" class="bg-light text-start fw-bold">${m_obj.data.Title}</td>`;
                 document.querySelector("#t-body").appendChild(m_tr);
@@ -81,19 +82,24 @@ ZOHO.CREATOR.init()
                     area_list.push(recordArr[i].Area);
                     if (recordArr[i].Task_Name != "Measure Air Flow" && recordArr[i].Task_Name != "Expense Inccurred" && recordArr[i].Task_Name != "Inventory Consumption") {
 
-                        
+                        function escapeDoubleQuotes(str) {
+                            return str.replace(/"/g, '\\"');
+                        }
                             const taskChoices = async (taskConfig)=>{
+                                
                                 taskConfig = {
                                     appName: "smart-joules-app",
                                     reportName: "All_Tasks",
-                                    criteria: `Task_Name == "${recordArr[i].Task_Name}"`
+                                    criteria: `Task_Name == "${escapeDoubleQuotes(recordArr[i].Task_Name)}" && Maintanance_ID == ${m_obj.data.Maintanance.ID}`
                                 }
                                 try{
+                                    console.log(taskConfig);
                                 const task_resp = await ZOHO.CREATOR.API.getAllRecords(taskConfig);
                                 const choices = task_resp.data[0];
                                 return choices.Choices.map(choice => choice.display_value);
                                 }
-                                catch{
+                                catch(err){
+                                    // console.log(err);
                                     return [];
                                 }
                             }
