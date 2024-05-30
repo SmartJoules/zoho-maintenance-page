@@ -38,6 +38,7 @@ ZOHO.CREATOR.init()
             }
             const response = await ZOHO.CREATOR.API.getAllRecords(configuration);
             let recordArr = response.data;
+           
             const maintenanceArr = recordArr.reduce((acc, curr) => {
                 if (!acc.includes(curr.Maintenance_ID)) {
                     acc.push(curr.Maintenance_ID);
@@ -66,14 +67,14 @@ ZOHO.CREATOR.init()
 
 
             const area_list = [];
+            console.log(maintenanceArr);
             for (let j = 0; j < maintenanceArr.length; j++) {
                 mConfig = {
                     appName: "smart-joules-app",
                     reportName: "All_Maintenance_Scheduler_Report",
-                    id: maintenanceArr[j]
+                    id:     maintenanceArr[j]
                 }
                 const m_obj = await ZOHO.CREATOR.API.getRecordById(mConfig);
-                console.log(m_obj);
                 const m_tr = document.createElement("tr");
                 m_tr.innerHTML = `<td colspan="11" class="bg-light text-start fw-bold">${m_obj.data.Title}</td>`;
                 document.querySelector("#t-body").appendChild(m_tr);
@@ -91,7 +92,7 @@ ZOHO.CREATOR.init()
                                 taskConfig = {
                                     appName: "smart-joules-app",
                                     reportName: "All_Tasks",
-                                    criteria: `Task_Name == "${escapeDoubleQuotes(newRecordArr[i].Task_Name)}" && Maintanance_ID == ${m_obj.data.Maintanance.ID}`
+                                    criteria: `Task_Name == "${escapeDoubleQuotes(newRecordArr[i].Task_Name)}" && Maintanance_ID == ${newRecordArr[i].Maintenance_Master}`
                                 }
                                 try{    
                                 const task_resp = await ZOHO.CREATOR.API.getAllRecords(taskConfig);
@@ -120,8 +121,8 @@ ZOHO.CREATOR.init()
                         tr_data += `<td class='d-none'>${newRecordArr[i].Field_Type.display_value}</td>`;
                         let select_tag = `<td id='resp-opt${i}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${i}'>
                            <option value=null ${(newRecordArr[i].Response_Option.display_value || newRecordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>`;
-                           select_tag += task_choices.includes("Yes") ? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>`: "";
-                           select_tag += task_choices.includes("No") ? `<option value='No' ${(newRecordArr[i].Response_Option.display_value === 'No') ? 'selected' : (newRecordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>`:"" ;
+                           select_tag += (task_choices.includes("Yes") || newRecordArr[i].Task_Name == "Cleaning of Air Filters" )? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>`: "";
+                           select_tag += (task_choices.includes("No") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='No' ${(newRecordArr[i].Response_Option.display_value === 'No') ? 'selected' : (newRecordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>`:"" ;
                            select_tag += task_choices.includes("Done") ? `<option value='Done' ${(newRecordArr[i].Response_Option.display_value === 'Done' || newRecordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>`:"";
                            select_tag += task_choices.includes("Not Done") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Not Done' || newRecordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>`:"";
                            select_tag += task_choices.includes("Okay") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Okay' || newRecordArr[i].Response_Option1 === "Okay") ? 'selected' : ''}>Okay</option>`:"";
