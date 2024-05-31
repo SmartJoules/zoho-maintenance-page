@@ -89,7 +89,9 @@ audio {
     .dropdown .dropdown-menu{
         max-height: 300px;
     }
-
+    .vid{
+        transform: rotate(0deg) !important;
+    }
     .dropdown .dropdown-menu .dropdown-item{
         cursor: pointer;
     }

@@ -27,7 +27,6 @@ ZOHO.CREATOR.init()
             }
             if (area) {
                 conditional_criteria += ` && Area == "${area}"`;
-
             }
             const configuration = {
                 appName: "smart-joules-app",
@@ -64,8 +63,6 @@ ZOHO.CREATOR.init()
             if (user_resp.code == 3000) {
                 added_user.value = user_resp.data[0].Completed_by;
             }
-
-
             const area_list = [];
             console.log(maintenanceArr);
             for (let j = 0; j < maintenanceArr.length; j++) {
@@ -88,7 +85,6 @@ ZOHO.CREATOR.init()
                             return str.replace(/"/g, '\\"');
                         }
                             const taskChoices = async (taskConfig)=>{
-                                
                                 taskConfig = {
                                     appName: "smart-joules-app",
                                     reportName: "All_Tasks",
@@ -110,6 +106,7 @@ ZOHO.CREATOR.init()
                         const tr = document.createElement("tr");
                         tr.className = `table-row`;
                         const audio_file = newRecordArr[i].Audio ? `https://creatorapp.zohopublic.in${newRecordArr[i].Audio}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : "";
+                        const video_file = newRecordArr[i].Video ? `https://creatorapp.zohopublic.in${newRecordArr[i].Video}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : "";
                         let tr_data = `<td>${s_no}
                         <audio class="d-none" id="audioPlayer${i}" controls>
                             <source src="${audio_file}" type="audio/mpeg">
@@ -171,7 +168,24 @@ ZOHO.CREATOR.init()
                         const img_url = fileUrl ? `https://creatorapp.zohopublic.in/publishapi/v2/smartjoules/smart-joules-app/report/All_Maintenance_Scheduler_Task_List_Records/${newRecordArr[i].ID}/Image/download?privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
                         tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].ID}</td>`;
-                        tr_data += `<td class='d-none'>${newRecordArr[i].Maintenance_ID}</td>`
+                        tr_data += `<td class='d-none'>${newRecordArr[i].Maintenance_ID}</td>`;
+                        tr_data += `<td>
+                        ${newRecordArr[i].Video ? `<i id="vid${i}-icon" class="bi fs-4 text-primary cursor-pointer bi-play-circle-fill" data-bs-toggle="modal" data-bs-target="#video-pop${i}"></i>
+                        <div class="modal fade" id="video-pop${i}"  aria-hidden="true" data-bs-backdrop="static">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                              <div class="modal-body">
+                                <video width="320" height="240" class="vid" controls>
+                                  <source src="${video_file}" type="video/mp4">
+                                </video>
+                              </div>
+                            </div>
+                          </div>
+                        </div>`:``}
+                        </td>`;
                         tr.innerHTML = tr_data;
                         const tbody = document.querySelector("#t-body");
                         tbody.appendChild(tr);
