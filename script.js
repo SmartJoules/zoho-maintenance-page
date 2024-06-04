@@ -1,6 +1,7 @@
 document.getElementsByClassName("wrapper")[0].style.display = "none";
 ZOHO.CREATOR.init()
     .then(function (data) {
+
         //   
         var queryParams = ZOHO.CREATOR.UTIL.getQueryParams();
         var maintenance_id = queryParams.maintenance_id;
@@ -37,7 +38,7 @@ ZOHO.CREATOR.init()
             }
             const response = await ZOHO.CREATOR.API.getAllRecords(configuration);
             let recordArr = response.data;
-           
+
             const maintenanceArr = recordArr.reduce((acc, curr) => {
                 if (!acc.includes(curr.Maintenance_ID)) {
                     acc.push(curr.Maintenance_ID);
@@ -51,7 +52,6 @@ ZOHO.CREATOR.init()
             }
             else {
                 area_label.textContent = recordArr[0].Area;
-
             }
             const added_user = document.querySelector(`#added-user`);
             user_config = {
@@ -64,19 +64,18 @@ ZOHO.CREATOR.init()
                 added_user.value = user_resp.data[0].Completed_by;
             }
             const area_list = [];
-            console.log(maintenanceArr);
             for (let j = 0; j < maintenanceArr.length; j++) {
                 mConfig = {
                     appName: "smart-joules-app",
                     reportName: "All_Maintenance_Scheduler_Report",
-                    id:     maintenanceArr[j]
+                    id: maintenanceArr[j]
                 }
                 const m_obj = await ZOHO.CREATOR.API.getRecordById(mConfig);
                 const m_tr = document.createElement("tr");
                 m_tr.innerHTML = `<td colspan="11" class="bg-light text-start fw-bold">${m_obj.data.Title}</td>`;
                 document.querySelector("#t-body").appendChild(m_tr);
                 const newRecordArr = recordArr.filter(rec => rec.Maintenance_ID == maintenanceArr[j]);
-        
+
                 for (let i = 0; i < newRecordArr.length; i++) {
                     area_list.push(newRecordArr[i].Area);
                     if (newRecordArr[i].Task_Name != "Measure Air Flow" && newRecordArr[i].Task_Name != "Expense Inccurred" && newRecordArr[i].Task_Name != "Inventory Consumption") {
@@ -84,24 +83,24 @@ ZOHO.CREATOR.init()
                         function escapeDoubleQuotes(str) {
                             return str.replace(/"/g, '\\"');
                         }
-                            const taskChoices = async (taskConfig)=>{
-                                taskConfig = {
-                                    appName: "smart-joules-app",
-                                    reportName: "All_Tasks",
-                                    criteria: `Task_Name == "${escapeDoubleQuotes(newRecordArr[i].Task_Name)}" && Maintanance_ID == ${newRecordArr[i].Maintenance_Master}`
-                                }
-                                try{    
+                        const taskChoices = async (taskConfig) => {
+                            taskConfig = {
+                                appName: "smart-joules-app",
+                                reportName: "All_Tasks",
+                                criteria: `Task_Name == "${escapeDoubleQuotes(newRecordArr[i].Task_Name)}" && Maintanance_ID == ${newRecordArr[i].Maintenance_Master}`
+                            }
+                            try {
                                 const task_resp = await ZOHO.CREATOR.API.getAllRecords(taskConfig);
                                 const choices = task_resp.data[0];
                                 return choices.Choices.map(choice => choice.display_value);
-                                }
-                                catch(err){
-                                    // console.log(err);
-                                    return [];
-                                }
                             }
-                            const task_choices = await taskChoices();
-                        
+                            catch (err) {
+                                // console.log(err);
+                                return [];
+                            }
+                        }
+                        const task_choices = await taskChoices();
+
                         const s_no = i + 1;
                         const tr = document.createElement("tr");
                         tr.className = `table-row`;
@@ -113,21 +112,21 @@ ZOHO.CREATOR.init()
                           </audio>
                         </td>
                             <td class='text-nowrap'>${newRecordArr[i].Date_field.substring(0, 6)}</td>
-                            <td class='text-start' style='min-width: 200px;'>${newRecordArr[i].Task_Name} ${newRecordArr[i].Audio ? `<span class="fs-6 cursor-pointer" id="audio-${i}"><i class='bi bi-play-fill'></i></span>` :""}</td>`;
-                            
+                            <td class='text-start' style='min-width: 200px;'>${newRecordArr[i].Task_Name} ${newRecordArr[i].Audio ? `<span class="fs-6 cursor-pointer" id="audio-${i}"><i class='bi bi-play-fill'></i></span>` : ""}</td>`;
+
                         tr_data += `<td class='d-none'>${newRecordArr[i].Field_Type.display_value}</td>`;
                         let select_tag = `<td id='resp-opt${i}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${i}'>
                            <option value=null ${(newRecordArr[i].Response_Option.display_value || newRecordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>`;
-                           select_tag += (task_choices.includes("Yes") || newRecordArr[i].Task_Name == "Cleaning of Air Filters" )? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>`: "";
-                           select_tag += (task_choices.includes("No") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='No' ${(newRecordArr[i].Response_Option.display_value === 'No') ? 'selected' : (newRecordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>`:"" ;
-                           select_tag += task_choices.includes("Done") ? `<option value='Done' ${(newRecordArr[i].Response_Option.display_value === 'Done' || newRecordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>`:"";
-                           select_tag += task_choices.includes("Not Done") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Not Done' || newRecordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>`:"";
-                           select_tag += task_choices.includes("Okay") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Okay' || newRecordArr[i].Response_Option1 === "Okay") ? 'selected' : ''}>Okay</option>`:"";
-                           select_tag += task_choices.includes("Not Okay") ? `<option value='Not Okay' ${(newRecordArr[i].Response_Option.display_value == 'Not Okay' || newRecordArr[i].Response_Option1 === "Not Okay") ? 'selected' : ''}>Not Okay</option>`:"";
-                           select_tag += task_choices.includes("Electrical") ? `<option value='Electrical' ${(newRecordArr[i].Response_Option.display_value == 'Electrical' || newRecordArr[i].Response_Option1 === "Electrical") ? 'selected' : ''}>Electrical</option>`:"";
-                           select_tag += task_choices.includes("Damage") ? `<option value='Damage' ${(newRecordArr[i].Response_Option.display_value == 'Damage' || newRecordArr[i].Response_Option1 === "Damage") ? 'selected' : ''}>Damage</option>`:"";
-                           select_tag += task_choices.includes("Safety") ? `<option value='Safety' ${(newRecordArr[i].Response_Option.display_value == 'Safety' || newRecordArr[i].Response_Option1 === "Safety") ? 'selected' : ''}>Safety</option>`:"";
-                           select_tag += `</select></td>`;
+                        select_tag += (task_choices.includes("Yes") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>` : "";
+                        select_tag += (task_choices.includes("No") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='No' ${(newRecordArr[i].Response_Option.display_value === 'No') ? 'selected' : (newRecordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>` : "";
+                        select_tag += task_choices.includes("Done") ? `<option value='Done' ${(newRecordArr[i].Response_Option.display_value === 'Done' || newRecordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>` : "";
+                        select_tag += task_choices.includes("Not Done") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Not Done' || newRecordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>` : "";
+                        select_tag += task_choices.includes("Okay") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Okay' || newRecordArr[i].Response_Option1 === "Okay") ? 'selected' : ''}>Okay</option>` : "";
+                        select_tag += task_choices.includes("Not Okay") ? `<option value='Not Okay' ${(newRecordArr[i].Response_Option.display_value == 'Not Okay' || newRecordArr[i].Response_Option1 === "Not Okay") ? 'selected' : ''}>Not Okay</option>` : "";
+                        select_tag += task_choices.includes("Electrical") ? `<option value='Electrical' ${(newRecordArr[i].Response_Option.display_value == 'Electrical' || newRecordArr[i].Response_Option1 === "Electrical") ? 'selected' : ''}>Electrical</option>` : "";
+                        select_tag += task_choices.includes("Damage") ? `<option value='Damage' ${(newRecordArr[i].Response_Option.display_value == 'Damage' || newRecordArr[i].Response_Option1 === "Damage") ? 'selected' : ''}>Damage</option>` : "";
+                        select_tag += task_choices.includes("Safety") ? `<option value='Safety' ${(newRecordArr[i].Response_Option.display_value == 'Safety' || newRecordArr[i].Response_Option1 === "Safety") ? 'selected' : ''}>Safety</option>` : "";
+                        select_tag += `</select></td>`;
                         const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${newRecordArr[i].Response_Amount}' class='form-control'></td>`;
                         const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${newRecordArr[i].Response_Text}' class='form-control'></td>`;
                         const response_options = newRecordArr[i].Field_Type.display_value;
@@ -178,35 +177,35 @@ ZOHO.CREATOR.init()
                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                               <div class="modal-body">
-                                <video width="320" height="240" class="vid" controls>
+                                <video class="vid" controls>
                                   <source src="${video_file}" type="video/mp4">
                                 </video>
                               </div>
                             </div>
                           </div>
-                        </div>`:``}
+                        </div>`: ``}
                         </td>`;
+                        tr_data += `<td class="d-none img-man">${newRecordArr[i].Image_Mandatory}</td>`;
                         tr.innerHTML = tr_data;
                         const tbody = document.querySelector("#t-body");
                         tbody.appendChild(tr);
                         const img_obj = document.querySelector(`#img${i}`);
                         const img_capture_obj = document.querySelector(`#img-capture${i}`);
                         const img_tag = document.getElementsByClassName("img-tag")[i];
-                        if(newRecordArr[i].Audio)
-                            {
-                                document.querySelector(`#audio-${i}`).addEventListener("click",()=>{
-                                    const audio = document.querySelector(`#audioPlayer${i}`);
-                                    const audio_obj = document.querySelector(`#audio-${i}`);
-                                    if (audio.paused) {
-                                        audio.play();
-                                        audio_obj.innerHTML = "<i class='bi bi-pause-fill'></i>";
-                                      } else {
-                                        audio.pause();
-                                        audio_obj.innerHTML = "<i class='bi bi-play-fill'></i>";
-                                        
-                                      }
-                                })
-                            }
+                        if (newRecordArr[i].Audio) {
+                            document.querySelector(`#audio-${i}`).addEventListener("click", () => {
+                                const audio = document.querySelector(`#audioPlayer${i}`);
+                                const audio_obj = document.querySelector(`#audio-${i}`);
+                                if (audio.paused) {
+                                    audio.play();
+                                    audio_obj.innerHTML = "<i class='bi bi-pause-fill'></i>";
+                                } else {
+                                    audio.pause();
+                                    audio_obj.innerHTML = "<i class='bi bi-play-fill'></i>";
+
+                                }
+                            })
+                        }
 
                         document.querySelector(`#clear-file${i}`).addEventListener("click", function () {
                             img_obj.value = '';
@@ -384,8 +383,8 @@ ZOHO.CREATOR.init()
                         const remark_output = document.querySelector("#resp-remark" + i);
                         const multipleResp = (resp) => {
                             return (resp == "Yes") ? "175578000000850048" : (resp == "No") ? "175578000000850052" : (resp == "Done") ? "175578000000569059" : (resp == "Not Done") ? "175578000000569063" :
-                             (resp == "Okay") ? "175578000000569051": (resp == "Not Okay") ? "175578000000569055" :(resp == "Electrical") ? "175578000000390011" : (resp == "Damage") ? "175578000000390007":
-                             (resp == "Safety") ? "175578000000390033":"";
+                                (resp == "Okay") ? "175578000000569051" : (resp == "Not Okay") ? "175578000000569055" : (resp == "Electrical") ? "175578000000390011" : (resp == "Damage") ? "175578000000390007" :
+                                    (resp == "Safety") ? "175578000000390033" : "";
                         }
                         formData = {
                             "data": {
@@ -697,29 +696,68 @@ ZOHO.CREATOR.init()
             document.getElementsByClassName("wrapper")[0].style.display = "block";
             document.body.style = "hidden";
         }
+
         const LoaderEnd = () => {
             document.getElementsByClassName("wrapper")[0].style.display = "none";
             document.body.style = "hidden";
             window.alert("Record Completed Successfully");
         }
 
+        const checkMandatory = () => {
+            const tr_arr = document.getElementsByTagName("tbody")[0].children;
+            let j = -1;
+            let x = 0;
+            let taskArr = [];
+            for (let i = 1; i < tr_arr.length; i++) {
+                j++;
+                const img_mandat = tr_arr[i].getElementsByClassName(`img-man`)[0].textContent;
+                const checkImg = document.getElementById(`img${j}`);
+                const checkImg2 = document.getElementById(`img-capture${j}`);
+                if (img_mandat == "true" || img_mandat == true) {
+                    if (!checkImg.value || !checkImg2.value) {
+                        const task_name = tr_arr[i].getElementsByTagName("td")[2].textContent;
+                        taskArr.push(task_name);
+                        x++;
+                    }
+                }
+            }
+            if (x > 0) {
+                const modal_alert = document.querySelector("#img-mand-alert");
+                modal_alert.querySelector(".modal-body").innerHTML = `<span>${taskArr}</span><br><span>The above tasks are mandatory to upload images</span>`;
+                $(`#img-mand-alert`).modal('show');
+                return true ;
+            }
+            else{
+                return false
+            }
+
+        }
+        setTimeout(checkMandatory, 5000);
+
         document.querySelector("#submit-btn").addEventListener("click", async () => {
             try {
-                await loaderStart();
-                const add_record = await add_records();
-                console.log("Records Added", add_record);
-                const add_image = await addImage();
-                console.log("Images Added", add_image);
-                const added_user = await submittedUser();
-                console.log(added_user);
-                const count_records = await count();
-                console.log(count_records);
-                const addSign = await updateSignature();
-                console.log(addSign);
-                await LoaderEnd();
+                const imgMandate = checkMandatory();
+                if (imgMandate == false) {
+                    await loaderStart();
+                    const add_record = await add_records();
+                    console.log("Records Added", add_record);
+                    const add_image = await addImage();
+                    console.log("Images Added", add_image);
+                    const added_user = await submittedUser();
+                    console.log(added_user);
+                    const count_records = await count();
+                    console.log(count_records);
+                    const addSign = await updateSignature();
+                    console.log(addSign);
+                    await LoaderEnd();
+                }
             } catch (err) {
                 console.log(err);
             }
+        })
+        document.querySelector("#go-next").addEventListener("click", () => {
+            const user_id = ZOHO.CREATOR.UTIL.getInitParams().loginUser;
+            window.parent.location.href = user_id.includes(".in") ? "https://creatorapp.zoho.in/smartjoules/smart-joules-app/#Page:Maintenance_Task_Page" : "https://smartjoules.zohocreatorportal.in/#Page:Maintenance_Task_Page";
         })
         // ZC End
     });

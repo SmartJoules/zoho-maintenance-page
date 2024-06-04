@@ -91,6 +91,8 @@ audio {
     }
     .vid{
         transform: rotate(0deg) !important;
+        height: 100%;
+        width: 100%;
     }
     .dropdown .dropdown-menu .dropdown-item{
         cursor: pointer;
