@@ -132,7 +132,7 @@ ZOHO.CREATOR.init()
                         const response_options = newRecordArr[i].Field_Type.display_value;
                         const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number" || response_options == "Meter Reading") ? num_input : (response_options == "Text") ? text_input : "";
                         tr_data = tr_data + resp_type;
-                        tr_data += `<td><div class="image-field border border-secondary rounded d-flex justify-content-around align-items-center">
+                        tr_data += `<td><div class="image-field border ${newRecordArr[i].Image_Mandatory == "false" ? `border-secondary`: `border-danger`} rounded d-flex justify-content-around align-items-center">
                             <div class="upload text-center cursor-pointer"><label for="img${i}" class="cursor-pointer"><i class="bi bi-image"></i></label><input type="file" id="img${i}" accept="image/*" class="d-none"></div>
                             <div class="capture h-100 text-center cursor-pointer">
                             <label data-bs-toggle="modal" data-bs-target="#capture${i}" class="cursor-pointer"><i class="bi bi-camera-fill cam-open"></i></label>
@@ -728,11 +728,10 @@ ZOHO.CREATOR.init()
                 return true ;
             }
             else{
-                return false
+                return false;
             }
 
         }
-        setTimeout(checkMandatory, 5000);
 
         document.querySelector("#submit-btn").addEventListener("click", async () => {
             try {
