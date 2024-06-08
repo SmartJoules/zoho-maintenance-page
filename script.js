@@ -714,7 +714,7 @@ ZOHO.CREATOR.init()
                 const checkImg = document.getElementById(`img${j}`);
                 const checkImg2 = document.getElementById(`img-capture${j}`);
                 if (img_mandat == "true" || img_mandat == true) {
-                    if (!checkImg.value || !checkImg2.value) {
+                    if (checkImg.value == "" && checkImg2.value == "") {
                         const task_name = tr_arr[i].getElementsByTagName("td")[2].textContent;
                         taskArr.push(task_name);
                         x++;
@@ -756,7 +756,7 @@ ZOHO.CREATOR.init()
         })
         document.querySelector("#go-next").addEventListener("click", () => {
             const user_id = ZOHO.CREATOR.UTIL.getInitParams().loginUser;
-            window.parent.location.href = user_id.includes(".in") ? "https://creatorapp.zoho.in/smartjoules/smart-joules-app/#Page:Maintenance_Task_Page" : "https://smartjoules.zohocreatorportal.in/#Page:Maintenance_Task_Page";
+            window.parent.location.href = user_id.includes(".in") ? "https://creatorapp.zoho.in/smartjoules/smart-joules-app/#Form:Maintenance_Task_Filter" : "https://smartjoules.zohocreatorportal.in/#Page:Maintenance_Task_Filter";
         })
         // ZC End
     });
