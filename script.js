@@ -700,7 +700,10 @@ ZOHO.CREATOR.init()
         const LoaderEnd = () => {
             document.getElementsByClassName("wrapper")[0].style.display = "none";
             document.body.style = "hidden";
-            window.alert("Record Completed Successfully");
+            const modal_alert = document.querySelector("#img-mand-alert");
+            modal_alert.querySelector(".modal-title").textContent = "";
+            modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
+            $(`#img-mand-alert`).modal('show');
         }
 
         const checkMandatory = () => {
@@ -711,10 +714,9 @@ ZOHO.CREATOR.init()
             for (let i = 1; i < tr_arr.length; i++) {
                 j++;
                 const img_mandat = tr_arr[i].getElementsByClassName(`img-man`)[0].textContent;
-                const checkImg = document.getElementById(`img${j}`);
-                const checkImg2 = document.getElementById(`img-capture${j}`);
+                const checkImg2 = document.getElementById(`img_prev${j}`);
                 if (img_mandat == "true" || img_mandat == true) {
-                    if (checkImg.value == "" && checkImg2.value == "") {
+                    if (checkImg2.src == "") {
                         const task_name = tr_arr[i].getElementsByTagName("td")[2].textContent;
                         taskArr.push(task_name);
                         x++;
