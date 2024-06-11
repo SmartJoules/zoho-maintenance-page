@@ -753,27 +753,27 @@ ZOHO.CREATOR.init()
                     catch(err){
                         console.log(err);
                     }
-                    try{
-                        const added_user = await submittedUser();
-                        console.log(added_user);
-                    }
-                    catch(err){
-                        console.log(err);
-                    }
-                    try{
-                        const count_records = await count();
-                        console.log(count_records);
-                    }
-                    catch(err){
-                        console.log(err);
-                    }
-                    try{
-                        const addSign = await updateSignature();
-                        console.log(addSign);
-                    }
-                    catch(err){
-                        console.log(err);
-                    }
+                    // try{
+                    //     const added_user = await submittedUser();
+                    //     console.log(added_user);
+                    // }
+                    // catch(err){
+                    //     console.log(err);
+                    // }
+                    // try{
+                    //     const count_records = await count();
+                    //     console.log(count_records);
+                    // }
+                    // catch(err){
+                    //     console.log(err);
+                    // }
+                    // try{
+                    //     const addSign = await updateSignature();
+                    //     console.log(addSign);
+                    // }
+                    // catch(err){
+                    //     console.log(err);
+                    // }
                     await LoaderEnd();
                 }
         })
