@@ -748,7 +748,7 @@ ZOHO.CREATOR.init()
                     }
                     try{
                         const add_image = await addImage();
-                        console.log("Images Added", add_image);
+                        console.log(add_image);
                     }
                     catch(err){
                         console.log(err);
