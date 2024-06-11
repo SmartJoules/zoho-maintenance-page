@@ -168,8 +168,7 @@ ZOHO.CREATOR.init()
                         tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].ID}</td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].Maintenance_ID}</td>`;
-                        tr_data += `<td>
-                        ${newRecordArr[i].Video ? `<i id="vid${i}-icon" class="bi fs-4 text-primary cursor-pointer bi-play-circle-fill" data-bs-toggle="modal" data-bs-target="#video-pop${i}"></i>
+                        tr_data += `<td>${newRecordArr[i].Video ? `<i id="vid${i}-icon" class="bi fs-4 text-primary cursor-pointer bi-play-circle-fill" data-bs-toggle="modal" data-bs-target="#video-pop${i}"></i>
                         <div class="modal fade" id="video-pop${i}"  aria-hidden="true" data-bs-backdrop="static">
                           <div class="modal-dialog">
                             <div class="modal-content">
@@ -183,7 +182,7 @@ ZOHO.CREATOR.init()
                               </div>
                             </div>
                           </div>
-                        </div>`: ``}
+                        </div>`: `<div class="d-none"></div>`}
                         </td>`;
                         tr_data += `<td class="d-none img-man">${newRecordArr[i].Image_Mandatory}</td>`;
                         tr.innerHTML = tr_data;
@@ -424,9 +423,8 @@ ZOHO.CREATOR.init()
                     if (resp.value && resp.value != "null" && resp.value != undefined && resp.value != null) {
                         const ret_img = document.querySelector(`#img${i}`);
                         const ret_capture_img = document.querySelector(`#img-capture${i}`);
-                        console.log(ret_capture_img);
                         if (ret_img || ret_capture_img) {
-                            const task_id = td[10].textContent;
+                            const task_id = td[9].textContent;
                             const resp_img_value = ret_img.files[0] ? ret_img.files[0] : ret_capture_img.files[0] ? ret_capture_img.files[0] : "";
                             if (resp_img_value) {
                                 const resp_img = resp_img_value;
@@ -569,43 +567,67 @@ ZOHO.CREATOR.init()
 
 
         const submittedUser = async () => {
+            // Check if document.querySelector and document.getElementsByClassName are available
+            if (typeof document.querySelector !== 'function' || typeof document.getElementsByClassName !== 'function') {
+                console.error("Browser does not support querySelector or getElementsByClassName");
+                return;
+            }
+        
             const added_user = document.querySelector("#added-user");
-            promises = [];
+            let promises = [];
             if (added_user) {
                 const table_row = document.getElementsByClassName("table-row");
                 const main_arr = [];
                 for (let k = 0; k < table_row.length; k++) {
-                    main_arr.push(table_row[k].children[11].textContent);
+                    main_arr.push(table_row[k].children[10].textContent);
                 }
-                const schedulerArr = [...new Set(main_arr)];
+        
+                // Check if Set is available
+                const schedulerArr = typeof Set === 'function' ? [...new Set(main_arr)] : main_arr.filter((v, i, a) => a.indexOf(v) === i);
+        
                 const user_name = added_user.value;
                 const months = [
                     "January", "February", "March", "April", "May", "June",
                     "July", "August", "September", "October", "November", "December"
                 ];
+        
                 const today = new Date();
                 today.toLocaleDateString();
                 const current_date = today.getDate() + "-" + months[today.getMonth()].substring(0, 3) + "-" + today.getFullYear();
-                formData = {
+        
+                const formData = {
                     "data": {
                         "Completed_by": user_name ? user_name : "",
                         "Completed_On": current_date
                     }
-                }
+                };
+        
                 for (let i = 0; i < schedulerArr.length; i++) {
                     const config = {
                         appName: "smart-joules-app",
-                        reportName: "Maintenance_Scheduler_Report",
+                        reportName: "New_Maintenance_Scheduler_Report",
                         id: schedulerArr[i],
                         data: formData,
+                    };
+        
+                    // Check if ZOHO.CREATOR.API.updateRecord is available
+                    if (typeof ZOHO !== 'undefined' && ZOHO.CREATOR && typeof ZOHO.CREATOR.API.updateRecord === 'function') {
+                        promises.push(ZOHO.CREATOR.API.updateRecord(config));
+                    } else {
+                        console.error("ZOHO.CREATOR.API.updateRecord is not available");
                     }
-                    promises.push(ZOHO.CREATOR.API.updateRecord(config));
                 }
-
-
             }
-            return Promise.all(promises);
-        }
+        
+            // Ensure Promise.all is available
+            if (typeof Promise.all === 'function') {
+                return Promise.all(promises);
+            } else {
+                console.error("Promise.all is not supported in this browser");
+                return;
+            }
+        };
+        
 
 
 
@@ -614,7 +636,7 @@ ZOHO.CREATOR.init()
             const table_row = document.getElementsByClassName("table-row");
             const main_arr = [];
             for (let k = 0; k < table_row.length; k++) {
-                main_arr.push(table_row[k].children[11].textContent);
+                main_arr.push(table_row[k].children[10].textContent);
             }
             const schedulerArr = [...new Set(main_arr)];
             for (let i = 0; i < schedulerArr.length; i++) {
@@ -641,12 +663,12 @@ ZOHO.CREATOR.init()
                             formData3 = {
                                 "data": {
                                     "Status": (complete_count == all_rec_count) ? "Completed" : "Pending",
-                                    "Progress": complete_count ? complete_count + " / " + all_rec_count : "0" + " / " + all_rec_count,
+                                    "Progress": complete_count ? complete_count + " / " + all_rec_count : "0" + " / " + all_rec_count
                                 }
                             }
                             var configStatus = {
                                 appName: "smart-joules-app",
-                                reportName: "Maintenance_Scheduler_Report",
+                                reportName: "New_Maintenance_Scheduler_Report",
                                 id: schedulerArr[i],
                                 data: formData3,
                             }
@@ -659,13 +681,28 @@ ZOHO.CREATOR.init()
         }
 
         const updateSignature = () => {
-            promises = [];
+            // Check if document.getElementsByClassName is available
+            if (typeof document.getElementsByClassName !== 'function') {
+                console.error("Browser does not support getElementsByClassName");
+                return;
+            }
+        
+            let promises = [];
             const table_row = document.getElementsByClassName("table-row");
             const main_arr = [];
             for (let k = 0; k < table_row.length; k++) {
-                main_arr.push(table_row[k].children[11].textContent);
+                main_arr.push(table_row[k].children[10].textContent);
             }
-            const schedulerArr = [...new Set(main_arr)];
+        
+            // Check if Set is available
+            const schedulerArr = typeof Set === 'function' ? [...new Set(main_arr)] : main_arr.filter((v, i, a) => a.indexOf(v) === i);
+        
+            // Check if atob is available
+            if (typeof atob !== 'function') {
+                console.error("Browser does not support atob");
+                return;
+            }
+        
             function dataURLtoBlob(dataURL) {
                 const byteString = atob(dataURL.split(',')[1]);
                 const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
@@ -676,21 +713,50 @@ ZOHO.CREATOR.init()
                 }
                 return new Blob([ab], { type: mimeString });
             }
+        
+            // Check if document.getElementById is available
+            if (typeof document.getElementById !== 'function') {
+                console.error("Browser does not support getElementById");
+                return;
+            }
+        
             const canvas = document.getElementById('signature-pad');
+        
+            // Check if canvas and toDataURL are available
+            if (!canvas || typeof canvas.toDataURL !== 'function') {
+                console.error("Canvas or toDataURL is not supported in this browser");
+                return;
+            }
+        
             const dataURL = canvas.toDataURL();
             const img_url = dataURLtoBlob(dataURL);
+        
             for (let i = 0; i < schedulerArr.length; i++) {
-                var config = {
+                const config = {
                     appName: "smart-joules-app",
-                    reportName: "Maintenance_Scheduler_Report",
+                    reportName: "New_Maintenance_Scheduler_Report",
                     id: schedulerArr[i],
                     fieldName: "Signature",
                     file: img_url ? img_url : null,
+                };
+        
+                // Check if ZOHO.CREATOR.API.uploadFile is available
+                if (typeof ZOHO !== 'undefined' && ZOHO.CREATOR && typeof ZOHO.CREATOR.API.uploadFile === 'function') {
+                    promises.push(ZOHO.CREATOR.API.uploadFile(config));
+                } else {
+                    console.error("ZOHO.CREATOR.API.uploadFile is not available");
                 }
-                promises.push(ZOHO.CREATOR.API.uploadFile(config));
             }
-            return Promise.all(promises);
-        }
+        
+            // Ensure Promise.all is available
+            if (typeof Promise.all === 'function') {
+                return Promise.all(promises);
+            } else {
+                console.error("Promise.all is not supported in this browser");
+                return;
+            }
+        };
+        
 
         const loaderStart = () => {
             document.getElementsByClassName("wrapper")[0].style.display = "block";
@@ -732,7 +798,6 @@ ZOHO.CREATOR.init()
             else{
                 return false;
             }
-
         }
 
         document.querySelector("#submit-btn").addEventListener("click", async () => {           
@@ -741,10 +806,9 @@ ZOHO.CREATOR.init()
                     await loaderStart();
                     try{
                         const add_record = await add_records();
-                        console.log("Records Added", add_record);
+                        console.log(add_record);
                     }
                     catch (err){
-                        console.log(err);
                     }
                     try{
                         const add_image = await addImage();
