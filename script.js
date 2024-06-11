@@ -426,7 +426,7 @@ ZOHO.CREATOR.init()
                         const ret_capture_img = document.querySelector(`#img-capture${i}`);
                         console.log(ret_capture_img);
                         if (ret_img || ret_capture_img) {
-                            const task_id = td[9].textContent;
+                            const task_id = td[10].textContent;
                             const resp_img_value = ret_img.files[0] ? ret_img.files[0] : ret_capture_img.files[0] ? ret_capture_img.files[0] : "";
                             if (resp_img_value) {
                                 const resp_img = resp_img_value;
@@ -575,7 +575,7 @@ ZOHO.CREATOR.init()
                 const table_row = document.getElementsByClassName("table-row");
                 const main_arr = [];
                 for (let k = 0; k < table_row.length; k++) {
-                    main_arr.push(table_row[k].children[10].textContent);
+                    main_arr.push(table_row[k].children[11].textContent);
                 }
                 const schedulerArr = [...new Set(main_arr)];
                 const user_name = added_user.value;
@@ -614,7 +614,7 @@ ZOHO.CREATOR.init()
             const table_row = document.getElementsByClassName("table-row");
             const main_arr = [];
             for (let k = 0; k < table_row.length; k++) {
-                main_arr.push(table_row[k].children[10].textContent);
+                main_arr.push(table_row[k].children[11].textContent);
             }
             const schedulerArr = [...new Set(main_arr)];
             for (let i = 0; i < schedulerArr.length; i++) {
@@ -663,7 +663,7 @@ ZOHO.CREATOR.init()
             const table_row = document.getElementsByClassName("table-row");
             const main_arr = [];
             for (let k = 0; k < table_row.length; k++) {
-                main_arr.push(table_row[k].children[10].textContent);
+                main_arr.push(table_row[k].children[11].textContent);
             }
             const schedulerArr = [...new Set(main_arr)];
             function dataURLtoBlob(dataURL) {
@@ -753,27 +753,27 @@ ZOHO.CREATOR.init()
                     catch(err){
                         console.log(err);
                     }
-                    // try{
-                    //     const added_user = await submittedUser();
-                    //     console.log(added_user);
-                    // }
-                    // catch(err){
-                    //     console.log(err);
-                    // }
-                    // try{
-                    //     const count_records = await count();
-                    //     console.log(count_records);
-                    // }
-                    // catch(err){
-                    //     console.log(err);
-                    // }
-                    // try{
-                    //     const addSign = await updateSignature();
-                    //     console.log(addSign);
-                    // }
-                    // catch(err){
-                    //     console.log(err);
-                    // }
+                    try{
+                        const added_user = await submittedUser();
+                        console.log(added_user);
+                    }
+                    catch(err){
+                        console.log(err);
+                    }
+                    try{
+                        const count_records = await count();
+                        console.log(count_records);
+                    }
+                    catch(err){
+                        console.log(err);
+                    }
+                    try{
+                        const addSign = await updateSignature();
+                        console.log(addSign);
+                    }
+                    catch(err){
+                        console.log(err);
+                    }
                     await LoaderEnd();
                 }
         })
