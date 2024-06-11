@@ -735,26 +735,47 @@ ZOHO.CREATOR.init()
 
         }
 
-        document.querySelector("#submit-btn").addEventListener("click", async () => {
-            try {
+        document.querySelector("#submit-btn").addEventListener("click", async () => {           
                 const imgMandate = checkMandatory();
                 if (imgMandate == false) {
                     await loaderStart();
-                    const add_record = await add_records();
-                    console.log("Records Added", add_record);
-                    const add_image = await addImage();
-                    console.log("Images Added", add_image);
-                    const added_user = await submittedUser();
-                    console.log(added_user);
-                    const count_records = await count();
-                    console.log(count_records);
-                    const addSign = await updateSignature();
-                    console.log(addSign);
+                    try{
+                        const add_record = await add_records();
+                        console.log("Records Added", add_record);
+                    }
+                    catch (err){
+                        console.log(err);
+                    }
+                    try{
+                        const add_image = await addImage();
+                        console.log("Images Added", add_image);
+                    }
+                    catch{
+                        console.log(err);
+                    }
+                    try{
+                        const added_user = await submittedUser();
+                        console.log(added_user);
+                    }
+                    catch{
+                        console.log(err);
+                    }
+                    try{
+                        const count_records = await count();
+                        console.log(count_records);
+                    }
+                    catch{
+                        console.log(err);
+                    }
+                    try{
+                        const addSign = await updateSignature();
+                        console.log(addSign);
+                    }
+                    catch{
+                        console.log(err);
+                    }
                     await LoaderEnd();
                 }
-            } catch (err) {
-                console.log(err);
-            }
         })
         document.querySelector("#go-next").addEventListener("click", () => {
             const user_id = ZOHO.CREATOR.UTIL.getInitParams().loginUser;
