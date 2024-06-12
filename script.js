@@ -126,6 +126,8 @@ ZOHO.CREATOR.init()
                         select_tag += task_choices.includes("Electrical") ? `<option value='Electrical' ${(newRecordArr[i].Response_Option.display_value == 'Electrical' || newRecordArr[i].Response_Option1 === "Electrical") ? 'selected' : ''}>Electrical</option>` : "";
                         select_tag += task_choices.includes("Damage") ? `<option value='Damage' ${(newRecordArr[i].Response_Option.display_value == 'Damage' || newRecordArr[i].Response_Option1 === "Damage") ? 'selected' : ''}>Damage</option>` : "";
                         select_tag += task_choices.includes("Safety") ? `<option value='Safety' ${(newRecordArr[i].Response_Option.display_value == 'Safety' || newRecordArr[i].Response_Option1 === "Safety") ? 'selected' : ''}>Safety</option>` : "";
+                        select_tag += task_choices.includes("Working") ? `<option value='Working' ${(newRecordArr[i].Response_Option.display_value == 'Working' || newRecordArr[i].Response_Option1 === "Working") ? 'selected' : ''}>Working</option>` : "";
+                        select_tag += task_choices.includes("Not Working") ? `<option value='Not Working' ${(newRecordArr[i].Response_Option.display_value == 'Not Working' || newRecordArr[i].Response_Option1 === "Not Working") ? 'selected' : ''}>Not Working</option>` : "";
                         select_tag += `</select></td>`;
                         const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${newRecordArr[i].Response_Amount}' class='form-control'></td>`;
                         const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${newRecordArr[i].Response_Text}' class='form-control'></td>`;
