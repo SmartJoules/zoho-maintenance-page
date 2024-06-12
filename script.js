@@ -114,7 +114,7 @@ ZOHO.CREATOR.init()
                             <td class='text-nowrap'>${newRecordArr[i].Date_field.substring(0, 6)}</td>
                             <td class='text-start' style='min-width: 200px;'>${newRecordArr[i].Task_Name} ${newRecordArr[i].Audio ? `<span class="fs-6 cursor-pointer" id="audio-${i}"><i class='bi bi-play-fill'></i></span>` : ""}</td>`;
 
-                        tr_data += `<td class='d-none'>${newRecordArr[i].Field_Type.display_value}</td>`;
+                        tr_data += `<td class='d-none' id="response-type${i}">${newRecordArr[i].Field_Type.display_value}</td>`;
                         let select_tag = `<td id='resp-opt${i}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${i}'>
                            <option value=null ${(newRecordArr[i].Response_Option.display_value || newRecordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>`;
                         select_tag += (task_choices.includes("Yes") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>` : "";
@@ -129,7 +129,7 @@ ZOHO.CREATOR.init()
                         select_tag += `</select></td>`;
                         const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${newRecordArr[i].Response_Amount}' class='form-control'></td>`;
                         const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${newRecordArr[i].Response_Text}' class='form-control'></td>`;
-                        const response_options = newRecordArr[i].Field_Type.display_value;
+                        const response_options = newRecordArr[i].Field_Type.display_value;  
                         const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number" || response_options == "Meter Reading") ? num_input : (response_options == "Text") ? text_input : "";
                         tr_data = tr_data + resp_type;
                         tr_data += `<td><div class="image-field border ${newRecordArr[i].Image_Mandatory == "false" ? `border-secondary`: `border-danger`} rounded d-flex justify-content-around align-items-center">
@@ -238,61 +238,7 @@ ZOHO.CREATOR.init()
 
             const distictAreaList = [...new Set(area_list)];
             // distictAreaList.forEach(y => {
-            //     const drop_li = document.createElement("li");
-            //     const drop_a = document.createElement("a");
-            //     drop_a.className = "dropdown-item";
-            //     drop_a.textContent = y;
-            //     drop_li.addEventListener("click", function () {
-
-            //         const tr = document.getElementsByTagName("tr");
-            //         for (let z = 0; z < tr.length; z++) {
-            //             const my_tr = tr[z];
-            //             const area_tag = my_tr.getElementsByTagName("td")[2];
-            //             if (area_tag) {
-            //                 const area_btn = document.querySelector("#area-btn");
-            //                 area_btn.textContent = area_tag.textContent;
-            //                 const area_name = area_tag.textContent;
-            //                 if (area_name != y) {
-            //                     my_tr.style.display = "none";
-            //                 }
-            //                 else {
-            //                     my_tr.style.display = "";
-            //                 }
-            //             }
-            //         }
-            //     })
-            //     drop_li.appendChild(drop_a);
-            //     const drop_down = document.querySelector(".dropdown-menu");
-            //     drop_down.appendChild(drop_li);
-            // })
         }
-        // document.querySelector("#clear-area").addEventListener("click", function () {
-        //     const tr = document.getElementsByTagName("tr");
-        //     for (const i of tr) {
-        //         i.style.display = "";
-        //         const area_btn = document.querySelector("#area-btn");
-        //         area_btn.textContent = "Area";
-        //     }
-        // })
-
-        // document.querySelector("#date-filter").addEventListener("click",function(){
-        //     const start = document.querySelector("#start-date");
-        //     const end = document.querySelector("#end-date");
-        //     if(start && end){
-        //         if(start.value && end.value){
-        //             const start_date_obj = new Date(start.value);
-        //             const end_date_obj = new Date(end.value);
-        //             if(end_date_obj >= start_date_obj){
-        //                 const end_date = end_date_obj.getDate()+"-"+monthString(end_date_obj.getMonth())+"-"+end_date_obj.getFullYear()  + " 00:00:00";
-        //                 const start_date = start_date_obj.getDate()+"-"+ monthString(start_date_obj.getMonth())+"-"+start_date_obj.getFullYear() + " 00:00:00";
-        //                 const table_rows = document.querySelector("#t-body");
-        //                 table_rows.innerHTML = "";
-        //                 createTable(start_date,end_date);
-        //             }
-        //         }
-        //     }
-        // })
-
 
         const queryFilter = () => {
             const query_date = queryParams.date;
@@ -313,12 +259,6 @@ ZOHO.CREATOR.init()
 
         }
         queryFilter();
-        // document.querySelector("#clear-date-filter").addEventListener("click",function(){
-        //     document.querySelector("#t-body").innerHTML = "";
-        //     document.querySelector("#start-date").value = "";
-        //     document.querySelector("#end-date").value = "";
-        //     defaultFilter();
-        // })
         const canva = () => {
             var canvas = document.querySelector("#signature-pad");
             var ctx = canvas.getContext('2d');
@@ -363,52 +303,55 @@ ZOHO.CREATOR.init()
         }
         canva();
 
-        const add_records = async () => {
-            const tr = document.getElementsByClassName("table-row");
-            promises = [];
+
+        const multipleResp =async (resp) => {
+            config = {
+                appName : "smart-joules-app",
+            reportName : "All_Maintanance_Task_Db",
+            criteria: `Single_Line == "${resp}"`,
+        }
+        return ZOHO.CREATOR.API.getAllRecords(config);
+        }
+
+        const addRecord = async () => {
+            const tr = document.querySelectorAll(".table-row");
+            let promises = [];
             for (let i = 0; i < tr.length; i++) {
-                const response = document.querySelector(`#resp-opt${i}`);
-                const response_option = tr[i];
-                const td = response_option.children;
-                const resp_option = td[3].textContent;
-                if (response) {
-                    const resp = response.lastChild;
-                    if (resp.value && resp.value != "null" && resp.value != undefined && resp.value != null && resp.value != "") {
-                        const task_id = td[9];
-                        const flag_obj = document.querySelector("#flag" + i);
-                        if (flag_obj) {
-                            var flag_resp = flag_obj.checked ? true : false;
-                        }
-                        const remark_output = document.querySelector("#resp-remark" + i);
-                        const multipleResp = (resp) => {
-                            return (resp == "Yes") ? "175578000000850048" : (resp == "No") ? "175578000000850052" : (resp == "Done") ? "175578000000569059" : (resp == "Not Done") ? "175578000000569063" :
-                                (resp == "Okay") ? "175578000000569051" : (resp == "Not Okay") ? "175578000000569055" : (resp == "Electrical") ? "175578000000390011" : (resp == "Damage") ? "175578000000390007" :
-                                    (resp == "Safety") ? "175578000000390033" : "";
-                        }
-                        formData = {
-                            "data": {
-                                "Remarks": remark_output ? remark_output.value : null,
-                                "Status": "Completed",
-                                "Response_Option": (resp_option == "Multiple Choice") ? multipleResp(resp.value) : null,
-                                "Response_Option1": (resp_option == "Expense" || resp_option == "Consumption") ? resp.value : "",
-                                "Response_Amount": (resp_option == "Number" || resp_option == "Meter Reading") ? resp.value : null,
-                                "Response_Text": (resp_option == "Text") ? resp.value : null,
-                                "Response_Value": resp.value ? resp.value : "",
-                                "Flags_For_Review": flag_resp ? flag_resp : false,
-                            }
-                        }
-                        config = {
-                            appName: "smart-joules-app",
-                            reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                            id: task_id.textContent,
-                            data: formData,
-                        }
-                        promises.push(ZOHO.CREATOR.API.updateRecord(config));
+                const response = document.querySelector(`#resp-opt${i}`).lastChild.value ;
+                console.log(response);
+                if(response ){
+                    const flag_obj = document.querySelector("#flag" + i);
+                    const flag_resp = flag_obj.checked ? true : false;
+                   const resp_option =  document.querySelector(`#response-type${i}`).textContent;
+                   const remark_output = document.querySelector(`#remark${i}`).value;
+                   const choice_resp =  await multipleResp(response);
+                   const choice_data = choice_resp.data[0];
+                   const choice_id = choice_data.ID;
+                 formData = {
+                    "data": {
+                        "Remarks": remark_output ? remark_output : "",
+                        "Status": "Completed",
+                        "Response_Option": (resp_option == "Multiple Choice") ? choice_id : null,
+                        "Response_Option1": (resp_option == "Expense" || resp_option == "Consumption") ? resp : "",
+                        "Response_Amount": (resp_option == "Number" || resp_option == "Meter Reading") ? resp : "",
+                        "Response_Text": (resp_option == "Text") ? resp : "",
+                        "Response_Value": response ? response : "",
+                        "Flags_For_Review": flag_resp ? flag_resp : false,
                     }
                 }
+                config = {
+                    appName: "smart-joules-app",
+                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                    id: tr[i].children[9].textContent,
+                    data: formData,
+                }
+                const updateResponse = await ZOHO.CREATOR.API.getAllRecords(config);
+                promises.push(updateResponse);
+                }
             }
-            return Promise.all(promises)
-        };
+            return Promise.all(promises);
+        }
+
 
         const addImage = async () => {
             const promises = [];
@@ -567,7 +510,6 @@ ZOHO.CREATOR.init()
 
 
         const submittedUser = async () => {
-            // Check if document.querySelector and document.getElementsByClassName are available
             if (typeof document.querySelector !== 'function' || typeof document.getElementsByClassName !== 'function') {
                 console.error("Browser does not support querySelector or getElementsByClassName");
                 return;
@@ -582,7 +524,6 @@ ZOHO.CREATOR.init()
                     main_arr.push(table_row[k].children[10].textContent);
                 }
         
-                // Check if Set is available
                 const schedulerArr = typeof Set === 'function' ? [...new Set(main_arr)] : main_arr.filter((v, i, a) => a.indexOf(v) === i);
         
                 const user_name = added_user.value;
@@ -805,8 +746,8 @@ ZOHO.CREATOR.init()
                 if (imgMandate == false) {
                     await loaderStart();
                     try{
-                        const add_record = await add_records();
-                        console.log(add_record);
+                        const addRecords = await addRecord();
+                        console.log(addRecords);
                     }
                     catch (err){
                     }
