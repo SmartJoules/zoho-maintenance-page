@@ -38,7 +38,6 @@ ZOHO.CREATOR.init()
             }
             const response = await ZOHO.CREATOR.API.getAllRecords(configuration);
             let recordArr = response.data;
-            console.log(recordArr);
             const maintenanceArr = recordArr.reduce((acc, curr) => {
                 if (!acc.includes(curr.Maintenance_ID)) {
                     acc.push(curr.Maintenance_ID);
@@ -156,14 +155,13 @@ ZOHO.CREATOR.init()
                         select_tag += task_choices.includes("Alignment") ? `<option value='Alignment' ${(newRecordArr[i].Response_Option.display_value == 'Alignment' || newRecordArr[i].Response_Option1 === "Alignment") ? 'selected' : ''}>Alignment</option>` : "";
                         select_tag += task_choices.includes("Switch working") ? `<option value='Switch working' ${(newRecordArr[i].Response_Option.display_value == 'Switch working' || newRecordArr[i].Response_Option1 === "Switch working") ? 'selected' : ''}>Switch working</option>` : "";
                         select_tag += task_choices.includes("Any vibration found") ? `<option value='Any vibration found' ${(newRecordArr[i].Response_Option.display_value == 'Any vibration found' || newRecordArr[i].Response_Option1 === "Any vibration found") ? 'selected' : ''}>Any vibration found</option>` : "";
-                        
                         select_tag += `</select></td>`;
                         const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${newRecordArr[i].Response_Amount}' class='form-control'></td>`;
                         const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${newRecordArr[i].Response_Text}' class='form-control'></td>`;
                         const response_options = newRecordArr[i].Field_Type.display_value;  
                         const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number" || response_options == "Meter Reading") ? num_input : (response_options == "Text") ? text_input : "";
                         tr_data = tr_data + resp_type;
-                        tr_data += `<td><div class="image-field border ${newRecordArr[i].Image_Mandatory == "false" ? `border-secondary`: `border-danger`} rounded d-flex justify-content-around align-items-center">
+                        tr_data += `<td><div class='d-flex'><div class="image-field border border-secondary rounded d-flex justify-content-around align-items-center">
                             <div class="upload text-center cursor-pointer"><label for="img${i}" class="cursor-pointer"><i class="bi bi-image"></i></label><input type="file" id="img${i}" accept="image/*" class="d-none"></div>
                             <div class="capture h-100 text-center cursor-pointer">
                             <label data-bs-toggle="modal" data-bs-target="#capture${i}" class="cursor-pointer"><i class="bi bi-camera-fill cam-open"></i></label>
@@ -190,12 +188,11 @@ ZOHO.CREATOR.init()
                                </div>
                              </div>
                             </div>
-                            <div class="capture h-100 text-center cursor-pointer"><label class="cursor-pointer h-100" id="clear-file${i}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
-                        </div></td>`;
+                            <div class="capture h-100 cursor-pointer"><label class="cursor-pointer h-100 d-flex align-items-center" id="clear-file${i}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
+                        </div>${newRecordArr[i].Image_Mandatory == "false"? ``:`<span class="text-danger fw-bold px-1">*</span>`}</div></td>`;
                         tr_data += `<td><input type='checkbox' id='flag${i}' ${newRecordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
                         tr_data += `<td><input type='text' id='remark${i}' class='form-control'></td>`;
-                        const fileUrl = newRecordArr[i].Image;
-                        const img_url = fileUrl ? `https://creatorapp.zohopublic.in${newRecordArr[i].Image}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
+                        const img_url = newRecordArr[i].Image ? `https://creatorapp.zohopublic.in${newRecordArr[i].Image}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
                         tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].ID}</td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].Maintenance_ID}</td>`;
@@ -216,6 +213,7 @@ ZOHO.CREATOR.init()
                         </div>`: `<div class="d-none"></div>`}
                         </td>`;
                         tr_data += `<td class="d-none img-man">${newRecordArr[i].Image_Mandatory}</td>`;
+                        tr_data += `<td class="d-none flag-choices"></td>`;
                         tr.innerHTML = tr_data;
                         const tbody = document.querySelector("#t-body");
                         tbody.appendChild(tr);
@@ -267,8 +265,6 @@ ZOHO.CREATOR.init()
                 }
             }
 
-            const distictAreaList = [...new Set(area_list)];
-            // distictAreaList.forEach(y => {
         }
 
         const queryFilter = () => {
@@ -756,7 +752,7 @@ ZOHO.CREATOR.init()
                 const checkImg2 = document.getElementById(`img_prev${j}`);
                 console.log(img_mandat, checkImg2.src);
                 if (img_mandat == "true" || img_mandat == true) {
-                    if (!checkImg2.src ) {
+                    if (checkImg2.src.includes("creatorapp.zoho.in") ) {
                         const task_name = tr_arr[i].getElementsByTagName("td")[2].textContent;
                         taskArr.push(task_name);
                         x++;
