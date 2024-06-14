@@ -38,7 +38,7 @@ ZOHO.CREATOR.init()
             }
             const response = await ZOHO.CREATOR.API.getAllRecords(configuration);
             let recordArr = response.data;
-
+            console.log(recordArr);
             const maintenanceArr = recordArr.reduce((acc, curr) => {
                 if (!acc.includes(curr.Maintenance_ID)) {
                     acc.push(curr.Maintenance_ID);
@@ -119,15 +119,44 @@ ZOHO.CREATOR.init()
                            <option value=null ${(newRecordArr[i].Response_Option.display_value || newRecordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>`;
                         select_tag += (task_choices.includes("Yes") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>` : "";
                         select_tag += (task_choices.includes("No") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='No' ${(newRecordArr[i].Response_Option.display_value === 'No') ? 'selected' : (newRecordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>` : "";
-                        select_tag += task_choices.includes("Done") ? `<option value='Done' ${(newRecordArr[i].Response_Option.display_value === 'Done' || newRecordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>` : "";
-                        select_tag += task_choices.includes("Not Done") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Not Done' || newRecordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>` : "";
-                        select_tag += task_choices.includes("Okay") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Okay' || newRecordArr[i].Response_Option1 === "Okay") ? 'selected' : ''}>Okay</option>` : "";
-                        select_tag += task_choices.includes("Not Okay") ? `<option value='Not Okay' ${(newRecordArr[i].Response_Option.display_value == 'Not Okay' || newRecordArr[i].Response_Option1 === "Not Okay") ? 'selected' : ''}>Not Okay</option>` : "";
-                        select_tag += task_choices.includes("Electrical") ? `<option value='Electrical' ${(newRecordArr[i].Response_Option.display_value == 'Electrical' || newRecordArr[i].Response_Option1 === "Electrical") ? 'selected' : ''}>Electrical</option>` : "";
+                        select_tag += task_choices.includes("Not working") ? `<option value='Not working' ${(newRecordArr[i].Response_Option.display_value == 'Not working' || newRecordArr[i].Response_Option1 === "Not working") ? 'selected' : ''}>Not working</option>` : "";
+                        select_tag += task_choices.includes("Alignment correct") ? `<option value='Alignment correct' ${(newRecordArr[i].Response_Option.display_value == 'Alignment correct' || newRecordArr[i].Response_Option1 === "Alignment correct") ? 'selected' : ''}>Alignment correct</option>` : "";
+                        select_tag += task_choices.includes("Not working") ? `<option value='Not working' ${(newRecordArr[i].Response_Option.display_value == 'Not working' || newRecordArr[i].Response_Option1 === "Not working") ? 'selected' : ''}>Not working</option>` : "";
+                        select_tag += task_choices.includes("Leakage found") ? `<option value='Leakage found' ${(newRecordArr[i].Response_Option.display_value == 'Leakage found' || newRecordArr[i].Response_Option1 === "Leakage found") ? 'selected' : ''}>Leakage found</option>` : "";
                         select_tag += task_choices.includes("Damage") ? `<option value='Damage' ${(newRecordArr[i].Response_Option.display_value == 'Damage' || newRecordArr[i].Response_Option1 === "Damage") ? 'selected' : ''}>Damage</option>` : "";
+                        select_tag += task_choices.includes("No provision") ? `<option value='No provision' ${(newRecordArr[i].Response_Option.display_value == 'No provision' || newRecordArr[i].Response_Option1 === "No provision") ? 'selected' : ''}>No provision</option>` : "";
+                        select_tag += task_choices.includes("Idle") ? `<option value='Idle' ${(newRecordArr[i].Response_Option.display_value == 'Idle' || newRecordArr[i].Response_Option1 === "Idle") ? 'selected' : ''}>Idle</option>` : "";
+                        select_tag += task_choices.includes("Electrical") ? `<option value='Electrical' ${(newRecordArr[i].Response_Option.display_value == 'Electrical' || newRecordArr[i].Response_Option1 === "Electrical") ? 'selected' : ''}>Electrical</option>` : "";
+                        select_tag += task_choices.includes("Alignment done") ? `<option value='Alignment done' ${(newRecordArr[i].Response_Option.display_value == 'Alignment done' || newRecordArr[i].Response_Option1 === "Alignment done") ? 'selected' : ''}>Alignment done</option>` : "";
+                        select_tag += task_choices.includes("Rotating and valves closed") ? `<option value='Rotating and valves closed' ${(newRecordArr[i].Response_Option.display_value == 'Rotating and valves closed' || newRecordArr[i].Response_Option1 === "Rotating and valves closed") ? 'selected' : ''}>Rotating and valves closed</option>` : "";
                         select_tag += task_choices.includes("Safety") ? `<option value='Safety' ${(newRecordArr[i].Response_Option.display_value == 'Safety' || newRecordArr[i].Response_Option1 === "Safety") ? 'selected' : ''}>Safety</option>` : "";
+                        select_tag += task_choices.includes("Already aligned") ? `<option value='Already aligned' ${(newRecordArr[i].Response_Option.display_value == 'Already aligned' || newRecordArr[i].Response_Option1 === "Already aligned") ? 'selected' : ''}>Already aligned</option>` : "";
+                        select_tag += task_choices.includes("Cleaned") ? `<option value='Cleaned' ${(newRecordArr[i].Response_Option.display_value == 'Cleaned' || newRecordArr[i].Response_Option1 === "Cleaned") ? 'selected' : ''}>Cleaned</option>` : "";
+                        select_tag += task_choices.includes("Okay") ? `<option value='Okay' ${(newRecordArr[i].Response_Option.display_value == 'Okay' || newRecordArr[i].Response_Option1 === "Okay") ? 'selected' : ''}>Okay</option>` : "";
+                        select_tag += task_choices.includes("Not working") ? `<option value='Not working' ${(newRecordArr[i].Response_Option.display_value == 'Not working' || newRecordArr[i].Response_Option1 === "Not working") ? 'selected' : ''}>Not working</option>` : "";
+                        select_tag += task_choices.includes("Already clean") ? `<option value='Already clean' ${(newRecordArr[i].Response_Option.display_value == 'Already clean' || newRecordArr[i].Response_Option1 === "Already clean") ? 'selected' : ''}>Already clean</option>` : "";
+                        select_tag += task_choices.includes("Not Okay") ? `<option value='Not Okay' ${(newRecordArr[i].Response_Option.display_value == 'Not Okay' || newRecordArr[i].Response_Option1 === "Not Okay") ? 'selected' : ''}>Not Okay</option>` : "";
+                        select_tag += task_choices.includes("Sealed") ? `<option value='Sealed' ${(newRecordArr[i].Response_Option.display_value == 'Sealed' || newRecordArr[i].Response_Option1 === "Sealed") ? 'selected' : ''}>Sealed</option>` : "";
+                        select_tag += task_choices.includes("Insulation damaged") ? `<option value='Insulation damaged' ${(newRecordArr[i].Response_Option.display_value == 'Insulation damaged' || newRecordArr[i].Response_Option1 === "Insulation damaged") ? 'selected' : ''}>Insulation damaged</option>` : "";
+                        select_tag += task_choices.includes("Done") ? `<option value='Done' ${(newRecordArr[i].Response_Option.display_value == 'Done' || newRecordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>` : "";
+                        select_tag += task_choices.includes("No leakage found") ? `<option value='No leakage found' ${(newRecordArr[i].Response_Option.display_value == 'No leakage found' || newRecordArr[i].Response_Option1 === "No leakage found") ? 'selected' : ''}>No leakage found</option>` : "";
+                        select_tag += task_choices.includes("Tightened") ? `<option value='Tightened' ${(newRecordArr[i].Response_Option.display_value == 'Tightened' || newRecordArr[i].Response_Option1 === "Tightened") ? 'selected' : ''}>Tightened</option>` : "";
+                        select_tag += task_choices.includes("Not Done") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Not Done' || newRecordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>` : "";
                         select_tag += task_choices.includes("Working") ? `<option value='Working' ${(newRecordArr[i].Response_Option.display_value == 'Working' || newRecordArr[i].Response_Option1 === "Working") ? 'selected' : ''}>Working</option>` : "";
-                        select_tag += task_choices.includes("Not Working") ? `<option value='Not Working' ${(newRecordArr[i].Response_Option.display_value == 'Not Working' || newRecordArr[i].Response_Option1 === "Not Working") ? 'selected' : ''}>Not Working</option>` : "";
+                        select_tag += task_choices.includes("Already tightened") ? `<option value='Already tightened' ${(newRecordArr[i].Response_Option.display_value == 'Already tightened' || newRecordArr[i].Response_Option1 === "Already tightened") ? 'selected' : ''}>Already tightened</option>` : "";  
+                        select_tag += task_choices.includes("Not working") ? `<option value='Not working' ${(newRecordArr[i].Response_Option.display_value == 'Not working' || newRecordArr[i].Response_Option1 === "Not working") ? 'selected' : ''}>Not working</option>` : "";
+                        select_tag += task_choices.includes("Sufficient") ? `<option value='Sufficient' ${(newRecordArr[i].Response_Option.display_value == 'Sufficient' || newRecordArr[i].Response_Option1 === "Sufficient") ? 'selected' : ''}>Sufficient</option>` : "";
+                        select_tag += task_choices.includes("Belt replaced") ? `<option value='Belt replaced' ${(newRecordArr[i].Response_Option.display_value == 'Belt replaced' || newRecordArr[i].Response_Option1 === "Belt replaced") ? 'selected' : ''}>Belt replaced</option>` : "";
+                        select_tag += task_choices.includes("Low") ? `<option value='Low' ${(newRecordArr[i].Response_Option.display_value == 'Low' || newRecordArr[i].Response_Option1 === "Low") ? 'selected' : ''}>Low</option>` : "";
+                        select_tag += task_choices.includes("No damage found") ? `<option value='No damage found' ${(newRecordArr[i].Response_Option.display_value == 'No damage found' || newRecordArr[i].Response_Option1 === "No damage found") ? 'selected' : ''}>No damage found</option>` : "";
+                        select_tag += task_choices.includes("Silt observed") ? `<option value='Silt observed' ${(newRecordArr[i].Response_Option.display_value == 'Silt observed' || newRecordArr[i].Response_Option1 === "Silt observed") ? 'selected' : ''}>Silt observed</option>` : "";
+                        select_tag += task_choices.includes("Slippage Observed and Adjusted") ? `<option value='Slippage Observed and Adjusted' ${(newRecordArr[i].Response_Option.display_value == 'Slippage Observed and Adjusted' || newRecordArr[i].Response_Option1 === "Slippage Observed and Adjusted") ? 'selected' : ''}>Slippage Observed and Adjusted</option>` : "";
+                        select_tag += task_choices.includes("No silt observed") ? `<option value='No silt observed' ${(newRecordArr[i].Response_Option.display_value == 'No silt observed' || newRecordArr[i].Response_Option1 === "No silt observed") ? 'selected' : ''}>No silt observed</option>` : "";
+                        select_tag += task_choices.includes("No Slippage observed") ? `<option value='No Slippage observed' ${(newRecordArr[i].Response_Option.display_value == 'No Slippage observed' || newRecordArr[i].Response_Option1 === "No Slippage observed") ? 'selected' : ''}>No Slippage observed</option>` : "";
+                        select_tag += task_choices.includes("Alignment") ? `<option value='Alignment' ${(newRecordArr[i].Response_Option.display_value == 'Alignment' || newRecordArr[i].Response_Option1 === "Alignment") ? 'selected' : ''}>Alignment</option>` : "";
+                        select_tag += task_choices.includes("Switch working") ? `<option value='Switch working' ${(newRecordArr[i].Response_Option.display_value == 'Switch working' || newRecordArr[i].Response_Option1 === "Switch working") ? 'selected' : ''}>Switch working</option>` : "";
+                        select_tag += task_choices.includes("Any vibration found") ? `<option value='Any vibration found' ${(newRecordArr[i].Response_Option.display_value == 'Any vibration found' || newRecordArr[i].Response_Option1 === "Any vibration found") ? 'selected' : ''}>Any vibration found</option>` : "";
+                        
                         select_tag += `</select></td>`;
                         const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${newRecordArr[i].Response_Amount}' class='form-control'></td>`;
                         const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${newRecordArr[i].Response_Text}' class='form-control'></td>`;
@@ -320,8 +349,9 @@ ZOHO.CREATOR.init()
             let promises = [];
             for (let i = 0; i < tr.length; i++) {
                 const response = document.querySelector(`#resp-opt${i}`).lastChild.value ;
-                console.log(response);
-                if(response ){
+               
+                if(response && response !=null && response != "" && response != undefined && response != "null" ){
+                    console.log(response);
                     const flag_obj = document.querySelector("#flag" + i);
                     const flag_resp = flag_obj.checked ? true : false;
                    const resp_option =  document.querySelector(`#response-type${i}`).textContent;
@@ -347,8 +377,8 @@ ZOHO.CREATOR.init()
                     id: tr[i].children[9].textContent,
                     data: formData,
                 }
-                const updateResponse = await ZOHO.CREATOR.API.getAllRecords(config);
-                promises.push(updateResponse);
+                const updateResp = ZOHO.CREATOR.API.updateRecord(config);
+                promises.push(updateResp);
                 }
             }
             return Promise.all(promises);
@@ -724,8 +754,9 @@ ZOHO.CREATOR.init()
                 j++;
                 const img_mandat = tr_arr[i].getElementsByClassName(`img-man`)[0].textContent;
                 const checkImg2 = document.getElementById(`img_prev${j}`);
+                console.log(img_mandat, checkImg2.src);
                 if (img_mandat == "true" || img_mandat == true) {
-                    if (checkImg2.src == "") {
+                    if (!checkImg2.src ) {
                         const task_name = tr_arr[i].getElementsByTagName("td")[2].textContent;
                         taskArr.push(task_name);
                         x++;
@@ -749,9 +780,10 @@ ZOHO.CREATOR.init()
                     await loaderStart();
                     try{
                         const addRecords = await addRecord();
-                        console.log(addRecords);
+                        console.log("Records Added:" + addRecords);
                     }
                     catch (err){
+                        console.log(err);
                     }
                     try{
                         const add_image = await addImage();
