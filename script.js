@@ -341,61 +341,48 @@ ZOHO.CREATOR.init()
         }
 
         const addRecord = async () => {
-            try {
-                const tr = document.querySelectorAll(".table-row");
-                let promises = [];
-                
-                for (let i = 0; i < tr.length; i++) {
-                    const response = document.querySelector(`#resp-opt${i}`).lastChild.value;
-                    if (response) {
-                        const flag_obj = document.querySelector("#flag" + i);
-                        const flag_resp = flag_obj.checked ? true : false;
-                        const resp_option = document.querySelector(`#response-type${i}`).textContent;
-                        const remark_output = document.querySelector(`#remark${i}`).value;
-        
-                        let choice_id = "";
-                        if (resp_option === "Multiple Choice") {
-                            try {
-                                const choice_resp = await multipleResp(response);
-                                const choice_data = choice_resp.data[0];
-                                choice_id = choice_data.ID;
-                            } catch (err) {
-                                console.error('Error fetching multiple choice response:', err);
-                                continue;
-                            }
-                        }
-        
-                        const formData = {
-                            "data": {
-                                "Remarks": remark_output || "",
-                                "Status": "Completed",
-                                "Response_Option": (resp_option === "Multiple Choice") ? choice_id : null,
-                                "Response_Option1": (resp_option === "Expense" || resp_option === "Consumption") ? response : "",
-                                "Response_Amount": (resp_option === "Number" || resp_option === "Meter Reading") ? response : "",
-                                "Response_Text": (resp_option === "Text") ? response : "",
-                                "Response_Value": response || "",
-                                "Flags_For_Review": flag_resp || false,
-                            }
-                        };
-        
-                        const config = {
-                            appName: "smart-joules-app",
-                            reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                            id: tr[i].children[9].textContent,
-                            data: formData,
-                        };
-        
-                        promises.push(ZOHO.CREATOR.API.updateRecord(config));
+            const tr = document.querySelectorAll(".table-row");
+            let promises = [];
+            for (let i = 0; i < tr.length; i++) {
+                const response = document.querySelector(`#resp-opt${i}`).lastChild.value ;
+                if(response){
+                    const flag_obj = document.querySelector("#flag" + i);
+                    const flag_resp = flag_obj.checked ? true : false;
+                   const resp_option =  document.querySelector(`#response-type${i}`).textContent;
+                   const remark_output = document.querySelector(`#remark${i}`).value;
+                   if (resp_option == "Multiple Choice") {
+                    try {
+                        const choice_resp = await multipleResp(response);
+                        const choice_data = choice_resp.data[0];
+                        choice_id = choice_data.ID;
+                    } catch (err) {
+                        console.error('Error fetching multiple choice response:', err);
+                        continue;
                     }
                 }
-        
-                const results = await Promise.all(promises);
-                return results;
-            } catch (err) {
-                console.error('Error in addRecord:', err);
+                 formData = {
+                    "data": {
+                        "Remarks": remark_output ? remark_output : "",
+                        "Status": "Completed",
+                        "Response_Option": (resp_option == "Multiple Choice") ? choice_id : null,
+                        "Response_Option1": (resp_option == "Expense" || resp_option == "Consumption") ? response : "",
+                        "Response_Amount": (resp_option == "Number" || resp_option == "Meter Reading") ? response : "",
+                        "Response_Text": (resp_option == "Text") ? response : "",
+                        "Response_Value": response ? response : "",
+                        "Flags_For_Review": flag_resp ? flag_resp : false,
+                    }
+                }
+               var config = {
+                    appName: "smart-joules-app",
+                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                    id: tr[i].children[9].textContent,
+                    data: formData,
+                }
+                 promises.push(ZOHO.CREATOR.API.updateRecord(config));
+                }
             }
-        };
-        
+            return Promise.all(promises);
+        }
 
 
         const addImage = async () => {
@@ -649,7 +636,7 @@ ZOHO.CREATOR.init()
                             formData3 = {
                                 "data": {
                                     "Status": (complete_count == all_rec_count) ? "Completed" : "Pending",
-                                    "Progress": complete_count ? complete_count + " / " + all_rec_count : "0" + " / " + all_rec_count
+                                    "Progress": complete_count ? complete_count + " / " + complete_count : "0" + " / " + all_rec_count
                                 }
                             }
                             var configStatus = {
