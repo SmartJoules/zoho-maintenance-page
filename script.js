@@ -332,12 +332,7 @@ ZOHO.CREATOR.init()
 
 
         const multipleResp =async (resp) => {
-            config = {
-                appName : "smart-joules-app",
-            reportName : "All_Maintanance_Task_Db",
-            criteria: `Single_Line == "${resp}"`,
-        }
-        return ZOHO.CREATOR.API.getAllRecords(config);
+            
         }
 
         const addRecord = async () => {
@@ -350,9 +345,16 @@ ZOHO.CREATOR.init()
                     const flag_resp = flag_obj.checked ? true : false;
                    const resp_option =  document.querySelector(`#response-type${i}`).textContent;
                    const remark_output = document.querySelector(`#remark${i}`).value;
+                   let choice_id = "";
                    if (resp_option == "Multiple Choice") {
+                    console.log(resp_option, response);
                     try {
-                        const choice_resp = await multipleResp(response);
+                        config = {
+                            appName : "smart-joules-app",
+                         reportName : "All_Maintanance_Task_Db",
+                            criteria: `Single_Line == "${response}"`,
+                       }
+                        const choice_resp = await ZOHO.CREATOR.API.getAllRecords(config);
                         const choice_data = choice_resp.data[0];
                         choice_id = choice_data.ID;
                     } catch (err) {
@@ -361,7 +363,7 @@ ZOHO.CREATOR.init()
                     }
                 }
                  formData = {
-                    "data": {
+                    "data":  {
                         "Remarks": remark_output ? remark_output : "",
                         "Status": "Completed",
                         "Response_Option": (resp_option == "Multiple Choice") ? choice_id : null,
