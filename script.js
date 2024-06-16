@@ -345,24 +345,22 @@ ZOHO.CREATOR.init()
             let promises = [];
             for (let i = 0; i < tr.length; i++) {
                 const response = document.querySelector(`#resp-opt${i}`).lastChild.value ;
-               
-                if(response && response !=null && response != "" && response != undefined && response != "null" ){
-                    console.log(response);
+                if(response){
                     const flag_obj = document.querySelector("#flag" + i);
                     const flag_resp = flag_obj.checked ? true : false;
                    const resp_option =  document.querySelector(`#response-type${i}`).textContent;
                    const remark_output = document.querySelector(`#remark${i}`).value;
-                   const choice_resp =  await multipleResp(response);
-                   const choice_data = choice_resp.data[0];
-                   const choice_id = choice_data.ID;
+                   const choice_resp =  resp_option == "Multiple Choice"? await multipleResp(response) : ["",""];
+                   const choice_data = resp_option == "Multiple Choice"? choice_resp.data[0]:"";
+                   const choice_id = resp_option == "Multiple Choice"? choice_data.ID:"";
                  formData = {
                     "data": {
                         "Remarks": remark_output ? remark_output : "",
                         "Status": "Completed",
                         "Response_Option": (resp_option == "Multiple Choice") ? choice_id : null,
-                        "Response_Option1": (resp_option == "Expense" || resp_option == "Consumption") ? resp : "",
-                        "Response_Amount": (resp_option == "Number" || resp_option == "Meter Reading") ? resp : "",
-                        "Response_Text": (resp_option == "Text") ? resp : "",
+                        "Response_Option1": (resp_option == "Expense" || resp_option == "Consumption") ? response : "",
+                        "Response_Amount": (resp_option == "Number" || resp_option == "Meter Reading") ? response : "",
+                        "Response_Text": (resp_option == "Text") ? response : "",
                         "Response_Value": response ? response : "",
                         "Flags_For_Review": flag_resp ? flag_resp : false,
                     }
