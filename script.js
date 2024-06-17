@@ -716,12 +716,7 @@ ZOHO.CREATOR.init()
             const wrapper = document.getElementsByClassName("wrapper")[0];
             if (wrapper) wrapper.style.display = "none";
             document.body.style.overflow = ""; 
-            const modal_alert = document.querySelector("#img-mand-alert");
-            if (modal_alert) {
-                modal_alert.querySelector(".modal-title").textContent = "";
-                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
-                $(`#img-mand-alert`).modal('show');
-            }
+            
             
         
             
@@ -769,8 +764,20 @@ ZOHO.CREATOR.init()
                 try {
                     const addRecords = await addRecord();
                     console.log("Records Added:", addRecords);
-                    loaderEnd();
+                    const modal_alert = document.querySelector("#img-mand-alert");
+            if (modal_alert) {
+                modal_alert.querySelector(".modal-title").textContent = "";
+                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
+                $(`#img-mand-alert`).modal('show');
+            }
+
                 } catch (err){
+                    const modal_alert = document.querySelector("#img-mand-alert");
+            if (modal_alert) {
+                modal_alert.querySelector(".modal-title").textContent = "";
+                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Filed to Upload!<br>${err}</span>`;
+                $(`#img-mand-alert`).modal('show');
+            }
                     console.error("Error adding records:", err);
                 }
         
