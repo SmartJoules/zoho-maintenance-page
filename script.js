@@ -771,19 +771,19 @@ ZOHO.CREATOR.init()
                 //     console.error("Error adding records:", err);
                 // }
         
-                try {
-                    const add_image = await addImage();
-                    console.log("Image Added:", add_image);
-                } catch (err) {
-                    console.error("Error adding image:", err);
-                }
-        
                 // try {
-                //     const added_user = await submittedUser();
-                //     console.log("User Submitted:", added_user);
+                //     const add_image = await addImage();
+                //     console.log("Image Added:", add_image);
                 // } catch (err) {
-                //     console.error("Error submitting user:", err);
+                //     console.error("Error adding image:", err);
                 // }
+        
+                try {
+                    const added_user = await submittedUser();
+                    console.log("User Submitted:", added_user);
+                } catch (err) {
+                    console.error("Error submitting user:", err);
+                }
         
                 // try {
                 //     const count_records = await count();
