@@ -769,6 +769,7 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
     if (!imgMandate) {
         loaderStart();
         try {
+            loaderEnd("Records Successfully Added!");
             const addRecords = await addRecord();
             console.log("Records Added:", addRecords);
 
@@ -784,7 +785,7 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
             const addSign = await updateSignature();
             console.log("Signature Added:", addSign);
             alert("Everything Runs");
-            loaderEnd("Records Successfully Added!"); // Moved here to indicate success
+            // Moved here to indicate success
 
         } catch (err) {
             loaderEnd(err); // Display error message in modal
