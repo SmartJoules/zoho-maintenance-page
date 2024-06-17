@@ -758,7 +758,7 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
         loaderStart();
         try {
             
-            const addRecords = await addRecord();
+            const addRecords =  addRecord();
             console.log("Records Added:", addRecords);
 
             loaderEnd("Records Successfully Added!");
