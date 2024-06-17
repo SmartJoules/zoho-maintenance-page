@@ -713,9 +713,9 @@ ZOHO.CREATOR.init()
         };
         
         const loaderEnd = () => { // Updated function name to be consistent
-            const wrapper = document.getElementsByClassName("wrapper")[0];
-            if (wrapper) wrapper.style.display = "none";
-            document.body.style.overflow = ""; // Revert the overflow style
+            // const wrapper = document.getElementsByClassName("wrapper")[0];
+            // if (wrapper) wrapper.style.display = "none";
+            // document.body.style.overflow = ""; // Revert the overflow style
         
             const modal_alert = document.querySelector("#img-mand-alert");
             if (modal_alert) {
@@ -763,27 +763,26 @@ ZOHO.CREATOR.init()
         document.querySelector("#submit-btn").addEventListener("click", async () => {
             const imgMandate = checkMandatory();
             if (!imgMandate) {
-                loaderStart();
-                // try {
-                //     const addRecords = await addRecord();
-                //     console.log("Records Added:", addRecords);
-                // } catch (err) {
-                //     console.error("Error adding records:", err);
-                // }
+                try {
+                    const addRecords = await addRecord();
+                    console.log("Records Added:", addRecords);
+                } catch (err) {
+                    console.error("Error adding records:", err);
+                }
         
-                // try {
-                //     const add_image = await addImage();
-                //     console.log("Image Added:", add_image);
-                // } catch (err) {
-                //     console.error("Error adding image:", err);
-                // }
+                try {
+                    const add_image = await addImage();
+                    console.log("Image Added:", add_image);
+                } catch (err) {
+                    console.error("Error adding image:", err);
+                }
         
-                // try {
-                //     const added_user = await submittedUser();
-                //     console.log("User Submitted:", added_user);
-                // } catch (err) {
-                //     console.error("Error submitting user:", err);
-                // }
+                try {
+                    const added_user = await submittedUser();
+                    console.log("User Submitted:", added_user);
+                } catch (err) {
+                    console.error("Error submitting user:", err);
+                }
         
                 try {
                     const count_records = await count();
@@ -792,12 +791,12 @@ ZOHO.CREATOR.init()
                     console.error("Error counting records:", err);
                 }
         
-                // try {
-                //     const addSign = await updateSignature();
-                //     console.log("Signature Added:", addSign);
-                // } catch (err) {
-                //     console.error("Error updating signature:", err);
-                // }
+                try {
+                    const addSign = await updateSignature();
+                    console.log("Signature Added:", addSign);
+                } catch (err) {
+                    console.error("Error updating signature:", err);
+                }
         
                 loaderEnd();
             }
