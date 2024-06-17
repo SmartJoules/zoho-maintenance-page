@@ -355,12 +355,7 @@ ZOHO.CREATOR.init()
                         const choice_resp = await ZOHO.CREATOR.API.getAllRecords(choiceConfig);
                         choice_id = choice_resp.data[0].ID;
                     } catch (err) {
-                        const modal_alert = document.querySelector("#img-mand-alert");
-            if (modal_alert) {
-                modal_alert.querySelector(".modal-title").textContent = "";
-                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">${err}</span>`;
-                $(`#img-mand-alert`).modal('show');
-            }
+                        
                         console.error('Error fetching multiple choice response:', err);
                         return;
                     }
@@ -719,7 +714,7 @@ ZOHO.CREATOR.init()
         };
 
         const loaderEnd = () => { // Updated function name to be consistent
-           
+
 
 
 
@@ -763,8 +758,9 @@ ZOHO.CREATOR.init()
         document.querySelector("#submit-btn").addEventListener("click", async () => {
             const imgMandate = checkMandatory();
             if (!imgMandate) {
-                loaderStart();
+                
                 try {
+                    loaderStart();
                     const addRecords = await addRecord();
                     console.log("Records Added:", addRecords);
                     const modal_alert = document.querySelector("#img-mand-alert");
