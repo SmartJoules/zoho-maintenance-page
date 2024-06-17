@@ -577,12 +577,8 @@ ZOHO.CREATOR.init()
                     data: formData,
                 };
 
-                if (typeof ZOHO !== 'undefined' && ZOHO.CREATOR && typeof ZOHO.CREATOR.API.updateRecord === 'function') {
+              
                     return ZOHO.CREATOR.API.updateRecord(config);
-                } else {
-                    console.error("ZOHO.CREATOR.API.updateRecord is not available");
-                    return Promise.reject("ZOHO.CREATOR.API.updateRecord is not available");
-                }
             });
 
             try {
@@ -692,11 +688,8 @@ ZOHO.CREATOR.init()
                     file: img_url || null,
                 };
 
-                if (typeof ZOHO !== 'undefined' && ZOHO.CREATOR && typeof ZOHO.CREATOR.API.uploadFile === 'function') {
-                    promises.push(ZOHO.CREATOR.API.uploadFile(config));
-                } else {
-                    console.error("ZOHO.CREATOR.API.uploadFile is not available");
-                }
+                
+                    return ZOHO.CREATOR.API.uploadFile(config);
             });
 
             return Promise.all(promises).catch(err => {
@@ -769,7 +762,7 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
     if (!imgMandate) {
         loaderStart();
         try {
-            loaderEnd("Records Successfully Added!");
+            
             const addRecords = await addRecord();
             console.log("Records Added:", addRecords);
 
@@ -784,7 +777,8 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
 
             const addSign = await updateSignature();
             console.log("Signature Added:", addSign);
-            alert("Everything Runs");
+            
+            loaderEnd("Records Successfully Added!");
             // Moved here to indicate success
 
         } catch (err) {
