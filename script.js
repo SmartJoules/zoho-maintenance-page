@@ -606,14 +606,16 @@ ZOHO.CREATOR.init()
                     // updateSignature()
                 ]);
         
-                loaderEnd(); // End the loader
+                loaderEnd(); 
         
                 console.log('All tasks completed successfully');
                 console.log({ recordsResult, imagesResult, userResult, countResult, signatureResult });
             } catch (err) {
                 console.error('Error in handleSubmit:', err);
+                loaderEnd(); // Ensure loader is stopped even in case of errors
             }
         };
+        
         
 
         document.addEventListener("click",e=>{
