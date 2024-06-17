@@ -717,12 +717,7 @@ ZOHO.CREATOR.init()
             // if (wrapper) wrapper.style.display = "none";
             // document.body.style.overflow = ""; // Revert the overflow style
         
-            const modal_alert = document.querySelector("#img-mand-alert");
-            if (modal_alert) {
-                modal_alert.querySelector(".modal-title").textContent = "";
-                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
-                $(`#img-mand-alert`).modal('show');
-            }
+            
         };
         
         const checkMandatory = () => {
@@ -798,7 +793,12 @@ ZOHO.CREATOR.init()
                     console.error("Error updating signature:", err);
                 }
         
-                loaderEnd();
+                const modal_alert = document.querySelector("#img-mand-alert");
+            if (modal_alert) {
+                modal_alert.querySelector(".modal-title").textContent = "";
+                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
+                $(`#img-mand-alert`).modal('show');
+            }
             }
         });
         
