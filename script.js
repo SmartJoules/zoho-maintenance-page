@@ -337,12 +337,12 @@ ZOHO.CREATOR.init()
             const promises = Array.from(tr).map(async (row, i) => {
                 const responseElement = document.querySelector(`#resp-opt${i}`).lastChild;
                 if (!responseElement || !responseElement.value) return;
-        
+
                 const response = responseElement.value;
                 const flag_resp = document.querySelector(`#flag${i}`).checked;
                 const resp_option = document.querySelector(`#response-type${i}`).textContent;
                 const remark_output = document.querySelector(`#remark${i}`).value || "";
-        
+
                 let choice_id = "";
                 if (resp_option === "Multiple Choice") {
                     try {
@@ -354,11 +354,12 @@ ZOHO.CREATOR.init()
                         const choice_resp = await ZOHO.CREATOR.API.getAllRecords(choiceConfig);
                         choice_id = choice_resp.data[0].ID;
                     } catch (err) {
+
                         console.error('Error fetching multiple choice response:', err);
                         return;
                     }
                 }
-        
+
                 const formData = {
                     "data": {
                         "Remarks": remark_output,
@@ -371,17 +372,17 @@ ZOHO.CREATOR.init()
                         "Flags_For_Review": flag_resp,
                     }
                 };
-        
+
                 const config = {
                     appName: "smart-joules-app",
                     reportName: "All_Maintenance_Scheduler_Task_List_Records",
                     id: row.children[9].textContent,
                     data: formData,
                 };
-        
+
                 return ZOHO.CREATOR.API.updateRecord(config);
             });
-        
+
             try {
                 const results = await Promise.all(promises);
                 return results;
@@ -765,19 +766,26 @@ ZOHO.CREATOR.init()
                 try {
                     const addRecords = await addRecord();
                     console.log("Records Added:", addRecords);
+
+                    const add_image = await addImage();
+                    console.log("Image Added:", add_image);
+
+                    const added_user = await submittedUser();
+                    console.log("User Submitted:", added_user);
+
+                    const count_records = await count();
+                    console.log("Count Records:", count_records);
+                    
+                    const addSign = await updateSignature();
+                    console.log("Signature Added:", addSign);
                 } catch (err) {
                     loaderEnd(err);
                     console.error("Error adding records:", err);
-                } finally {
-                    try {
-                        const add_image = await addImage();
-                        console.log("Image Added:", add_image);
-                    } catch (err) {
-                        console.error("Error adding image:", err);
-                    } finally {
-                        loaderEnd("Records Successfully Added!");
-                    }
+                }finally{
+                    loaderEnd("Records Successfully Added!");
                 }
+
+                
             }
         });
 
