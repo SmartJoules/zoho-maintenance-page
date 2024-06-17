@@ -778,19 +778,19 @@ ZOHO.CREATOR.init()
                 //     console.error("Error adding image:", err);
                 // }
         
-                try {
-                    const added_user = await submittedUser();
-                    console.log("User Submitted:", added_user);
-                } catch (err) {
-                    console.error("Error submitting user:", err);
-                }
-        
                 // try {
-                //     const count_records = await count();
-                //     console.log("Count Records:", count_records);
+                //     const added_user = await submittedUser();
+                //     console.log("User Submitted:", added_user);
                 // } catch (err) {
-                //     console.error("Error counting records:", err);
+                //     console.error("Error submitting user:", err);
                 // }
+        
+                try {
+                    const count_records = await count();
+                    console.log("Count Records:", count_records);
+                } catch (err) {
+                    console.error("Error counting records:", err);
+                }
         
                 // try {
                 //     const addSign = await updateSignature();
