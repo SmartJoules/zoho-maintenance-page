@@ -602,7 +602,7 @@ ZOHO.CREATOR.init()
                     // addRecord(),
                     // addImage(),
                     // submittedUser(),
-                    // count(),
+                    count(),
                     // updateSignature()
                 ]);
         
