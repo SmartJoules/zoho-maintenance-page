@@ -355,7 +355,7 @@ ZOHO.CREATOR.init()
                         const choice_resp = await ZOHO.CREATOR.API.getAllRecords(choiceConfig);
                         choice_id = choice_resp.data[0].ID;
                     } catch (err) {
-                        
+
                         console.error('Error fetching multiple choice response:', err);
                         return;
                     }
@@ -758,58 +758,63 @@ ZOHO.CREATOR.init()
         document.querySelector("#submit-btn").addEventListener("click", async () => {
             const imgMandate = checkMandatory();
             if (!imgMandate) {
-                
-                try {
-                    loaderStart();
-                    const addRecords = await addRecord();
-                    console.log("Records Added:", addRecords);
-                    const modal_alert = document.querySelector("#img-mand-alert");
-                    if (modal_alert) {
-                        modal_alert.querySelector(".modal-title").textContent = "";
-                        modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
-                        $(`#img-mand-alert`).modal('show');
-                    }
 
-                } catch (err) {
-                    const wrapper = document.getElementsByClassName("wrapper")[0];
-                    if (wrapper) wrapper.style.display = "none";
-                    document.body.style.overflow = "";
-                    const modal_alert = document.querySelector("#img-mand-alert");
-                    if (modal_alert) {
-                        modal_alert.querySelector(".modal-title").textContent = "Error";
-                        modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Filed to Upload!<br>${err}</span>`;
-                        $(`#img-mand-alert`).modal('show');
-                    }
-                    console.error("Error adding records:", err);
-                }
+                loaderStart();
+                setTimeout(() => {
+                    loaderEnd();
+                }, 5000)
 
-                try {
-                    const add_image = await addImage();
-                    console.log("Image Added:", add_image);
-                } catch (err) {
-                    console.error("Error adding image:", err);
-                }
+                // try {
+                //     loaderStart();
+                //     const addRecords = await addRecord();
+                //     console.log("Records Added:", addRecords);
+                //     const modal_alert = document.querySelector("#img-mand-alert");
+                //     if (modal_alert) {
+                //         modal_alert.querySelector(".modal-title").textContent = "";
+                //         modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
+                //         $(`#img-mand-alert`).modal('show');
+                //     }
 
-                try {
-                    const added_user = await submittedUser();
-                    console.log("User Submitted:", added_user);
-                } catch (err) {
-                    console.error("Error submitting user:", err);
-                }
+                // } catch (err) {
+                //     const wrapper = document.getElementsByClassName("wrapper")[0];
+                //     if (wrapper) wrapper.style.display = "none";
+                //     document.body.style.overflow = "";
+                //     const modal_alert = document.querySelector("#img-mand-alert");
+                //     if (modal_alert) {
+                //         modal_alert.querySelector(".modal-title").textContent = "Error";
+                //         modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Filed to Upload!<br>${err}</span>`;
+                //         $(`#img-mand-alert`).modal('show');
+                //     }
+                //     console.error("Error adding records:", err);
+                // }
 
-                try {
-                    const count_records = await count();
-                    console.log("Count Records:", count_records);
-                } catch (err) {
-                    console.error("Error counting records:", err);
-                }
+                // try {
+                //     const add_image = await addImage();
+                //     console.log("Image Added:", add_image);
+                // } catch (err) {
+                //     console.error("Error adding image:", err);
+                // }
 
-                try {
-                    const addSign = await updateSignature();
-                    console.log("Signature Added:", addSign);
-                } catch (err) {
-                    console.error("Error updating signature:", err);
-                }
+                // try {
+                //     const added_user = await submittedUser();
+                //     console.log("User Submitted:", added_user);
+                // } catch (err) {
+                //     console.error("Error submitting user:", err);
+                // }
+
+                // try {
+                //     const count_records = await count();
+                //     console.log("Count Records:", count_records);
+                // } catch (err) {
+                //     console.error("Error counting records:", err);
+                // }
+
+                // try {
+                //     const addSign = await updateSignature();
+                //     console.log("Signature Added:", addSign);
+                // } catch (err) {
+                //     console.error("Error updating signature:", err);
+                // }
 
 
             }
