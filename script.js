@@ -367,7 +367,7 @@ ZOHO.CREATOR.init()
                         "Response_Option": resp_option === "Multiple Choice" ? choice_id : "",
                         "Response_Option1": ["Expense", "Consumption"].includes(resp_option) ? response : "",
                         "Response_Amount": ["Number", "Meter Reading"].includes(resp_option) ? response : "",
-                        "Response_Text": resp_option == "Text" ? response : "",
+                        "Response_Text": resp_option === "Text" ? response : "",
                         "Response_Value": response,
                         "Flags_For_Review": flag_resp,
                     }
@@ -391,8 +391,6 @@ ZOHO.CREATOR.init()
             }
         };
         
-
-
         const addImage = async () => {
             const trCollection = document.getElementsByClassName("table-row");
             const promises = Array.from(trCollection).map((row, i) => {
@@ -400,7 +398,7 @@ ZOHO.CREATOR.init()
                 if (!responseElement) return;
         
                 const response = responseElement.lastChild;
-                if (!response.value || response.value === "null" || response.value === undefined || response.value === null) return;
+                if (!response.value) return;
         
                 const ret_img = document.querySelector(`#img${i}`);
                 const ret_capture_img = document.querySelector(`#img-capture${i}`);
@@ -408,9 +406,7 @@ ZOHO.CREATOR.init()
         
                 const task_id = row.children[9].textContent;
                 const resp_img_value = ret_img?.files[0] || ret_capture_img?.files[0] || "";
-                if (!resp_img_value) return "Invalid Image Format";
-        
-                if (!(resp_img_value instanceof Blob)) return "Invalid Image Format";
+                if (!resp_img_value || !(resp_img_value instanceof Blob)) return "Invalid Image Format";
         
                 const config = {
                     appName: "smart-joules-app",
@@ -424,125 +420,13 @@ ZOHO.CREATOR.init()
             });
         
             try {
-                const results = await Promise.all(promises.filter(p => p));
+                const results = await Promise.all(promises.filter(Boolean));
                 return results;
             } catch (err) {
                 console.error('Error in addImage:', err);
             }
         };
         
-
-        let currentCamera = "environment";
-        let stream;
-        let metadataLoaded = false;
-
-        document.addEventListener("click", (event) => {
-            const target_class_list = Array.from(event.target.classList);
-            const target_obj = event.target.parentElement;
-            if (target_class_list.includes("cam-open")) {
-                const video_id = event.target.parentElement.getAttribute("data-bs-target");
-                const video_obj = document.querySelector(video_id);
-                const video = video_obj.querySelector("video");
-                const canvas = video_obj.querySelector("canvas");
-
-                navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: currentCamera
-                    }
-                })
-                    .then((cameraStream) => {
-                        video.srcObject = cameraStream;
-                        stream = cameraStream;
-                        video.addEventListener("loadedmetadata", () => {
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
-                            metadataLoaded = true;
-                        });
-                    })
-                    .catch((err) => {
-                        console.error('Error accessing camera: ' + err);
-                    });
-                video.setAttribute('playsinline', '');
-            } else if (target_class_list.includes("cam-close")) {
-                stopCamera();
-            } else if (target_class_list.includes("capture")) {
-
-                const canvas = target_obj.querySelector("canvas");
-                const video_element = target_obj.parentElement.querySelector("video");
-                captureImage(video_element, canvas);
-            }
-            else if (target_class_list.includes("switch")) {
-                const video_element = target_obj.parentElement.querySelector("video");
-                switchCamera(video_element);
-            }
-        });
-
-        const captureImage = (video, canvas) => {
-            if (!metadataLoaded) {
-                console.error('Video metadata is not yet loaded.');
-                return;
-            }
-            const index_no = video.getAttribute("index");
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageDataURL = canvas.toDataURL('image/png');
-            const capturedImage = document.querySelector(`#img_prev${index_no}`);
-            stopCamera();
-            capturedImage.src = imageDataURL;
-            const imageBlob = dataURItoBlob(imageDataURL);
-            const imageFile = new File([imageBlob], 'captured_image.png', { type: 'image/png' });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(imageFile);
-            const image_field = document.querySelector(`#img-capture${index_no}`);
-            image_field.files = dataTransfer.files;
-        };
-
-
-
-        const switchCamera = (video) => {
-            currentCamera = (currentCamera === 'user') ? 'environment' : (currentCamera === "environment") ? 'user' : "";
-            stopCamera();
-
-            if (currentCamera == "user") {
-                video.style.transform = "rotateY(180deg)";
-            } else {
-                video.style.transform = "rotateY(0deg)";
-            }
-
-            navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: currentCamera
-                }
-            })
-                .then(function (cameraStream) {
-                    video.srcObject = cameraStream;
-                    stream = cameraStream;
-                    video.setAttribute('playsinline', '');
-                })
-                .catch(function (err) {
-                    console.error('Error accessing camera: ' + err);
-                });
-        };
-
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-        }
-
-
-        const dataURItoBlob = (dataURI) => {
-            const byteString = atob(dataURI.split(',')[1]);
-            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            return new Blob([ab], { type: mimeString });
-        };
-
-
         const submittedUser = async () => {
             if (typeof document.querySelector !== 'function' || typeof document.getElementsByClassName !== 'function') {
                 console.error("Browser does not support querySelector or getElementsByClassName");
@@ -557,7 +441,6 @@ ZOHO.CREATOR.init()
         
             const user_name = addedUserElement.value;
             const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        
             const today = new Date();
             const current_date = `${today.getDate()}-${months[today.getMonth()].substring(0, 3)}-${today.getFullYear()}`;
         
@@ -591,10 +474,6 @@ ZOHO.CREATOR.init()
             }
         };
         
-        
-
-
-
         const count = async () => {
             const table_rows = Array.from(document.getElementsByClassName("table-row"));
             const main_arr = table_rows.map(row => row.children[10].textContent);
@@ -639,57 +518,40 @@ ZOHO.CREATOR.init()
             });
         
             try {
-                const results = await Promise.all(promises.filter(p => p));
+                const results = await Promise.all(promises.filter(Boolean));
                 return results;
             } catch (err) {
                 console.error('Error in count function:', err);
             }
         };
         
-
-        const updateSignature = () => {
-            // Check if document.getElementsByClassName is available
-            if (typeof document.getElementsByClassName !== 'function') {
-                console.error("Browser does not support getElementsByClassName");
+        const updateSignature = async () => {
+            if (typeof document.getElementsByClassName !== 'function' ||
+                typeof document.getElementById !== 'function' ||
+                typeof atob !== 'function' ||
+                typeof Promise.all !== 'function') {
+                console.error("Browser does not support required functions");
                 return;
             }
         
-            let promises = [];
-            const table_row = document.getElementsByClassName("table-row");
-            const main_arr = [];
-            for (let k = 0; k < table_row.length; k++) {
-                main_arr.push(table_row[k].children[10].textContent);
-            }
+            const promises = [];
+            const table_rows = Array.from(document.getElementsByClassName("table-row"));
+            const main_arr = table_rows.map(row => row.children[10].textContent);
+            const schedulerArr = [...new Set(main_arr)];
         
-            // Check if Set is available
-            const schedulerArr = typeof Set === 'function' ? [...new Set(main_arr)] : main_arr.filter((v, i, a) => a.indexOf(v) === i);
-        
-            // Check if atob is available
-            if (typeof atob !== 'function') {
-                console.error("Browser does not support atob");
-                return;
-            }
-        
-            function dataURLtoBlob(dataURL) {
-                const byteString = atob(dataURL.split(',')[1]);
-                const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+            const dataURLtoBlob = (dataURL) => {
+                const [header, data] = dataURL.split(',');
+                const byteString = atob(data);
+                const mimeString = header.split(':')[1].split(';')[0];
                 const ab = new ArrayBuffer(byteString.length);
                 const ia = new Uint8Array(ab);
                 for (let i = 0; i < byteString.length; i++) {
                     ia[i] = byteString.charCodeAt(i);
                 }
                 return new Blob([ab], { type: mimeString });
-            }
-        
-            // Check if document.getElementById is available
-            if (typeof document.getElementById !== 'function') {
-                console.error("Browser does not support getElementById");
-                return;
-            }
+            };
         
             const canvas = document.getElementById('signature-pad');
-        
-            // Check if canvas and toDataURL are available
             if (!canvas || typeof canvas.toDataURL !== 'function') {
                 console.error("Canvas or toDataURL is not supported in this browser");
                 return;
@@ -698,129 +560,65 @@ ZOHO.CREATOR.init()
             const dataURL = canvas.toDataURL();
             const img_url = dataURLtoBlob(dataURL);
         
-            for (let i = 0; i < schedulerArr.length; i++) {
+            schedulerArr.forEach(id => {
                 const config = {
                     appName: "smart-joules-app",
                     reportName: "New_Maintenance_Scheduler_Report",
-                    id: schedulerArr[i],
+                    id,
                     fieldName: "Signature",
-                    file: img_url ? img_url : null,
+                    file: img_url,
                 };
         
-                // Check if ZOHO.CREATOR.API.uploadFile is available
                 if (typeof ZOHO !== 'undefined' && ZOHO.CREATOR && typeof ZOHO.CREATOR.API.uploadFile === 'function') {
                     promises.push(ZOHO.CREATOR.API.uploadFile(config));
                 } else {
                     console.error("ZOHO.CREATOR.API.uploadFile is not available");
+                    promises.push(Promise.reject("ZOHO.CREATOR.API.uploadFile is not available"));
                 }
-            }
+            });
         
-            // Ensure Promise.all is available
-            if (typeof Promise.all === 'function') {
-                return Promise.all(promises);
-            } else {
-                console.error("Promise.all is not supported in this browser");
-                return;
+            try {
+                return await Promise.all(promises);
+            } catch (err) {
+                console.error("Error in updateSignature:", err);
             }
         };
-        
-
         const loaderStart = () => {
             const wrapper = document.getElementsByClassName("wrapper")[0];
             if (wrapper) wrapper.style.display = "block";
             document.body.style.overflow = "hidden"; // Better approach to prevent scrolling
         };
-        
         const loaderEnd = () => { // Updated function name to be consistent
             const wrapper = document.getElementsByClassName("wrapper")[0];
             if (wrapper) wrapper.style.display = "none";
-            document.body.style.overflow = ""; // Revert the overflow style
+            document.body.style.overflow = "";
+        }
         
-            const modal_alert = document.querySelector("#img-mand-alert");
-            if (modal_alert) {
-                modal_alert.querySelector(".modal-title").textContent = "";
-                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
-                $(`#img-mand-alert`).modal('show');
+        const handleSubmit = async () => {
+            try {
+                const [recordsResult, imagesResult, userResult, countResult, signatureResult] = await Promise.all([
+                  await  loaderStart(),
+                  await  addRecord(),
+                  await  addImage(),
+                 await   submittedUser(),
+                  await  count(),
+                  await  updateSignature(),
+                  await  loaderEnd()
+                ]);
+        
+                console.log('All tasks completed successfully');
+                console.log ({loaderStart, recordsResult, imagesResult, userResult, countResult, signatureResult,loaderEnd });
+            } catch (err) {
+                console.error('Error in handleSubmit:', err);
             }
         };
-        
-        const checkMandatory = () => {
-            const tr_arr = document.querySelector("tbody").children;
-            let j = -1;
-            let x = 0;
-            const taskArr = [];
-        
-            Array.from(tr_arr).forEach((row, i) => {
-                if (i === 0) return; // Skip the first row if it's a header
-        
-                j++;
-                const img_mandat = row.querySelector(".img-man").textContent;
-                const checkImg2 = document.getElementById(`img_prev${j}`);
-                console.log(img_mandat, checkImg2.src);
-        
-                if (img_mandat === "true" || img_mandat === true) {
-                    if (checkImg2.src.includes("creatorapp.zoho.in")) {
-                        const task_name = row.querySelector("td:nth-child(3)").textContent;
-                        taskArr.push(task_name);
-                        x++;
-                    }
-                }
-            });
-        
-            if (x > 0) {
-                const modal_alert = document.querySelector("#img-mand-alert");
-                if (modal_alert) {
-                    modal_alert.querySelector(".modal-body").innerHTML = `<span>${taskArr.join(', ')}</span><br><span>The above tasks are mandatory to upload images</span>`;
-                    $(`#img-mand-alert`).modal('show');
-                }
-                return true;
-            } else {
-                return false;
+
+        document.addEventListener("click",e=>{
+            if(e.target.id == "submit-btn"){
+                handleSubmit();
             }
-        };
+        })
         
-        document.querySelector("#submit-btn").addEventListener("click", async () => {
-            const imgMandate = checkMandatory();
-            if (!imgMandate) {
-                loaderStart();
-                try {
-                    const addRecords = await addRecord();
-                    console.log("Records Added:", addRecords);
-                } catch (err) {
-                    console.error("Error adding records:", err);
-                }
-        
-                try {
-                    const add_image = await addImage();
-                    console.log("Image Added:", add_image);
-                } catch (err) {
-                    console.error("Error adding image:", err);
-                }
-        
-                try {
-                    const added_user = await submittedUser();
-                    console.log("User Submitted:", added_user);
-                } catch (err) {
-                    console.error("Error submitting user:", err);
-                }
-        
-                try {
-                    const count_records = await count();
-                    console.log("Count Records:", count_records);
-                } catch (err) {
-                    console.error("Error counting records:", err);
-                }
-        
-                try {
-                    const addSign = await updateSignature();
-                    console.log("Signature Added:", addSign);
-                } catch (err) {
-                    console.error("Error updating signature:", err);
-                }
-        
-                loaderEnd();
-            }
-        });
         
         document.querySelector("#go-next").addEventListener("click", () => {
             const user_id = ZOHO.CREATOR.UTIL.getInitParams().loginUser;
