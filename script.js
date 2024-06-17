@@ -383,10 +383,9 @@ ZOHO.CREATOR.init()
                 return ZOHO.CREATOR.API.updateRecord(config);
                
             });
-            alert(promises);
-
             try {
                 const results = await Promise.all(promises);
+                alert (results);
                 return results;
             } catch (err) {
                 console.error('Error in addRecord:', err);
