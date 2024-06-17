@@ -600,7 +600,7 @@ ZOHO.CREATOR.init()
         
                 const [recordsResult, imagesResult, userResult, countResult, signatureResult] = await Promise.all([
                     // addRecord(),
-                    addImage(),
+                    // addImage(),
                     // submittedUser(),
                     // count(),
                     // updateSignature()
