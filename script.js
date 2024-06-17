@@ -599,11 +599,11 @@ ZOHO.CREATOR.init()
                 loaderStart(); // Start the loader
         
                 const [recordsResult, imagesResult, userResult, countResult, signatureResult] = await Promise.all([
-                    // addRecord(),
-                    addImage(),
-                    submittedUser(),
-                    count(),
-                    updateSignature()
+                    addRecord(),
+                    // addImage(),
+                    // submittedUser(),
+                    // count(),
+                    // updateSignature()
                 ]);
         
                 loaderEnd(); // End the loader
