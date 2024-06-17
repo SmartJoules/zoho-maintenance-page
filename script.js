@@ -1,4 +1,3 @@
-document.getElementsByClassName("wrapper")[0].style.display = "none";
 ZOHO.CREATOR.init()
     .then(function (data) {
 
@@ -713,10 +712,10 @@ ZOHO.CREATOR.init()
             document.body.style.overflow = "hidden"; // Better approach to prevent scrolling
         };
 
-        const loaderEnd = () => { // Updated function name to be consistent
-
-
-
+        const loaderEnd = () => { 
+            const wrapper = document.getElementsByClassName("wrapper")[0];
+            if (wrapper) wrapper.style.display = "none";
+            document.body.style.overflow = "auto";
 
         };
 
