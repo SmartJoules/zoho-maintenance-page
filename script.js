@@ -385,9 +385,9 @@ ZOHO.CREATOR.init()
             });
             try {
                 const results = await Promise.all(promises);
-                alert (results);
                 return results;
             } catch (err) {
+                alert ("Code Error");
                 console.error('Error in addRecord:', err);
             }
         };
