@@ -424,13 +424,7 @@ ZOHO.CREATOR.init()
 
                 return ZOHO.CREATOR.API.uploadFile(config);
             });
-
-            try {
-                const results = await Promise.all(promises.filter(p => p));
-                return results;
-            } catch (err) {
-                console.error('Error in addImage:', err);
-            }
+                return Promise.all(promises);
         };
 
 
@@ -759,22 +753,22 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
         loaderStart();
         try {
             
-            const addRecords =  addRecord();
+            const addRecords = await addRecord();
             console.log("Records Added:", addRecords);
 
             loaderEnd("Records Successfully Added!");
 
-            const addImageResponse = await addImage();
-            console.log("Image Added:", addImageResponse);
+            // const addImageResponse = await addImage();
+            // console.log("Image Added:", addImageResponse);
 
-            const addedUser = await submittedUser();
-            console.log("User Submitted:", addedUser);
+            // const addedUser = await submittedUser();
+            // console.log("User Submitted:", addedUser);
 
-            const countRecords = await count();
-            console.log("Count Records:", countRecords);
+            // const countRecords = await count();
+            // console.log("Count Records:", countRecords);
 
-            const addSign = await updateSignature();
-            console.log("Signature Added:", addSign);
+            // const addSign = await updateSignature();
+            // console.log("Signature Added:", addSign);
 
            
             // Moved here to indicate success
