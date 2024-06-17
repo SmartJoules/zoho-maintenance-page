@@ -712,7 +712,7 @@ ZOHO.CREATOR.init()
             document.body.style.overflow = "hidden"; // Better approach to prevent scrolling
         };
 
-        const loaderEnd = () => { 
+        const loaderEnd = () => {
             const wrapper = document.getElementsByClassName("wrapper")[0];
             if (wrapper) wrapper.style.display = "none";
             document.body.style.overflow = "auto";
@@ -757,35 +757,30 @@ ZOHO.CREATOR.init()
         document.querySelector("#submit-btn").addEventListener("click", async () => {
             const imgMandate = checkMandatory();
             if (!imgMandate) {
-
                 loaderStart();
-                setTimeout(() => {
-                    loaderEnd();
-                }, 5000)
+                try {
+                    loaderStart();
+                    const addRecords = await addRecord();
+                    console.log("Records Added:", addRecords);
+                    const modal_alert = document.querySelector("#img-mand-alert");
+                    if (modal_alert) {
+                        modal_alert.querySelector(".modal-title").textContent = "";
+                        modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
+                        $(`#img-mand-alert`).modal('show');
+                    }
 
-                // try {
-                //     loaderStart();
-                //     const addRecords = await addRecord();
-                //     console.log("Records Added:", addRecords);
-                //     const modal_alert = document.querySelector("#img-mand-alert");
-                //     if (modal_alert) {
-                //         modal_alert.querySelector(".modal-title").textContent = "";
-                //         modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
-                //         $(`#img-mand-alert`).modal('show');
-                //     }
-
-                // } catch (err) {
-                //     const wrapper = document.getElementsByClassName("wrapper")[0];
-                //     if (wrapper) wrapper.style.display = "none";
-                //     document.body.style.overflow = "";
-                //     const modal_alert = document.querySelector("#img-mand-alert");
-                //     if (modal_alert) {
-                //         modal_alert.querySelector(".modal-title").textContent = "Error";
-                //         modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Filed to Upload!<br>${err}</span>`;
-                //         $(`#img-mand-alert`).modal('show');
-                //     }
-                //     console.error("Error adding records:", err);
-                // }
+                } catch (err) {
+                    const wrapper = document.getElementsByClassName("wrapper")[0];
+                    if (wrapper) wrapper.style.display = "none";
+                    document.body.style.overflow = "";
+                    const modal_alert = document.querySelector("#img-mand-alert");
+                    if (modal_alert) {
+                        modal_alert.querySelector(".modal-title").textContent = "Error";
+                        modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Filed to Upload!<br>${err}</span>`;
+                        $(`#img-mand-alert`).modal('show');
+                    }
+                    console.error("Error adding records:", err);
+                }
 
                 // try {
                 //     const add_image = await addImage();
