@@ -764,19 +764,19 @@ ZOHO.CREATOR.init()
             const imgMandate = checkMandatory();
             if (!imgMandate) {
                 loaderStart();
-                try {
-                    const addRecords = await addRecord();
-                    console.log("Records Added:", addRecords);
-                } catch (err) {
-                    console.error("Error adding records:", err);
-                }
-        
                 // try {
-                //     const add_image = await addImage();
-                //     console.log("Image Added:", add_image);
+                //     const addRecords = await addRecord();
+                //     console.log("Records Added:", addRecords);
                 // } catch (err) {
-                //     console.error("Error adding image:", err);
+                //     console.error("Error adding records:", err);
                 // }
+        
+                try {
+                    const add_image = await addImage();
+                    console.log("Image Added:", add_image);
+                } catch (err) {
+                    console.error("Error adding image:", err);
+                }
         
                 // try {
                 //     const added_user = await submittedUser();
