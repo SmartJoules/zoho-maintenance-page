@@ -771,33 +771,33 @@ ZOHO.CREATOR.init()
                     console.error("Error adding records:", err);
                 }
         
-                try {
-                    const add_image = await addImage();
-                    console.log("Image Added:", add_image);
-                } catch (err) {
-                    console.error("Error adding image:", err);
-                }
+                // try {
+                //     const add_image = await addImage();
+                //     console.log("Image Added:", add_image);
+                // } catch (err) {
+                //     console.error("Error adding image:", err);
+                // }
         
-                try {
-                    const added_user = await submittedUser();
-                    console.log("User Submitted:", added_user);
-                } catch (err) {
-                    console.error("Error submitting user:", err);
-                }
+                // try {
+                //     const added_user = await submittedUser();
+                //     console.log("User Submitted:", added_user);
+                // } catch (err) {
+                //     console.error("Error submitting user:", err);
+                // }
         
-                try {
-                    const count_records = await count();
-                    console.log("Count Records:", count_records);
-                } catch (err) {
-                    console.error("Error counting records:", err);
-                }
+                // try {
+                //     const count_records = await count();
+                //     console.log("Count Records:", count_records);
+                // } catch (err) {
+                //     console.error("Error counting records:", err);
+                // }
         
-                try {
-                    const addSign = await updateSignature();
-                    console.log("Signature Added:", addSign);
-                } catch (err) {
-                    console.error("Error updating signature:", err);
-                }
+                // try {
+                //     const addSign = await updateSignature();
+                //     console.log("Signature Added:", addSign);
+                // } catch (err) {
+                //     console.error("Error updating signature:", err);
+                // }
         
                 loaderEnd();
             }
