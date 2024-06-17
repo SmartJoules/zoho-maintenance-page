@@ -596,22 +596,25 @@ ZOHO.CREATOR.init()
         
         const handleSubmit = async () => {
             try {
+                loaderStart(); // Start the loader
+        
                 const [recordsResult, imagesResult, userResult, countResult, signatureResult] = await Promise.all([
-                  await  loaderStart(),
-                  await  addRecord(),
-                  await  addImage(),
-                 await   submittedUser(),
-                  await  count(),
-                  await  updateSignature(),
-                  await  loaderEnd()
+                    addRecord(),
+                    addImage(),
+                    submittedUser(),
+                    count(),
+                    updateSignature()
                 ]);
         
+                loaderEnd(); // End the loader
+        
                 console.log('All tasks completed successfully');
-                console.log ({loaderStart, recordsResult, imagesResult, userResult, countResult, signatureResult,loaderEnd });
+                console.log({ recordsResult, imagesResult, userResult, countResult, signatureResult });
             } catch (err) {
                 console.error('Error in handleSubmit:', err);
             }
         };
+        
 
         document.addEventListener("click",e=>{
             if(e.target.id == "submit-btn"){
