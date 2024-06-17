@@ -713,9 +713,16 @@ ZOHO.CREATOR.init()
         };
         
         const loaderEnd = () => { // Updated function name to be consistent
-            // const wrapper = document.getElementsByClassName("wrapper")[0];
-            // if (wrapper) wrapper.style.display = "none";
-            // document.body.style.overflow = ""; // Revert the overflow style
+            const wrapper = document.getElementsByClassName("wrapper")[0];
+            if (wrapper) wrapper.style.display = "none";
+            document.body.style.overflow = ""; 
+            const modal_alert = document.querySelector("#img-mand-alert");
+            if (modal_alert) {
+                modal_alert.querySelector(".modal-title").textContent = "";
+                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
+                $(`#img-mand-alert`).modal('show');
+            }
+            
         
             
         };
@@ -758,10 +765,12 @@ ZOHO.CREATOR.init()
         document.querySelector("#submit-btn").addEventListener("click", async () => {
             const imgMandate = checkMandatory();
             if (!imgMandate) {
+                loaderStart();
                 try {
                     const addRecords = await addRecord();
                     console.log("Records Added:", addRecords);
-                } catch (err) {
+                    loaderEnd();
+                } catch (err){
                     console.error("Error adding records:", err);
                 }
         
@@ -793,12 +802,7 @@ ZOHO.CREATOR.init()
                     console.error("Error updating signature:", err);
                 }
         
-                const modal_alert = document.querySelector("#img-mand-alert");
-            if (modal_alert) {
-                modal_alert.querySelector(".modal-title").textContent = "";
-                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
-                $(`#img-mand-alert`).modal('show');
-            }
+                
             }
         });
         
