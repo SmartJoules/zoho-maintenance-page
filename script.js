@@ -706,88 +706,92 @@ ZOHO.CREATOR.init()
 
 
 
-        const loaderStart = () => {
-            const wrapper = document.getElementsByClassName("wrapper")[0];
-            if (wrapper) wrapper.style.display = "block";
-            document.body.style.overflow = "hidden"; // Better approach to prevent scrolling
-        };
+        // Function to start the loader
+const loaderStart = () => {
+    const wrapper = document.getElementsByClassName("wrapper")[0];
+    if (wrapper) wrapper.style.display = "block";
+    document.body.style.overflow = "hidden"; 
+};
 
-        const loaderEnd = (msg) => {
-            const wrapper = document.getElementsByClassName("wrapper")[0];
-            if (wrapper) wrapper.style.display = "none";
-            document.body.style.overflow = "auto";
-            const modal_alert = document.querySelector("#img-mand-alert");
-            if (modal_alert) {
-                modal_alert.querySelector(".modal-title").textContent = "";
-                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">${msg}</span>`;
-                $(`#img-mand-alert`).modal('show');
+// Function to stop the loader and show a modal alert with a message
+const loaderEnd = (msg) => {
+    const wrapper = document.getElementsByClassName("wrapper")[0];
+    if (wrapper) wrapper.style.display = "none";
+    document.body.style.overflow = "auto";
+    
+    const modalAlert = document.querySelector("#img-mand-alert");
+    if (modalAlert) {
+        modalAlert.querySelector(".modal-title").textContent = "";
+        modalAlert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">${msg}</span>`;
+        $('#img-mand-alert').modal('show'); // Assuming jQuery is being used
+    }
+};
+
+// Function to check mandatory image uploads
+const checkMandatory = () => {
+    const trArr = document.querySelector("tbody").children;
+    let j = -1;
+    let x = 0;
+    const taskArr = [];
+
+    Array.from(trArr).forEach((row, i) => {
+        if (i === 0) return; // Skip the first row if it's a header
+
+        j++;
+        const imgMandat = row.querySelector(".img-man").textContent;
+        const checkImg2 = document.getElementById(`img_prev${j}`);
+        console.log(imgMandat, checkImg2.src);
+
+        if (imgMandat === "true" || imgMandat === true) {
+            if (checkImg2.src.includes("creatorapp.zoho.in")) {
+                const taskName = row.querySelector("td:nth-child(3)").textContent;
+                taskArr.push(taskName);
+                x++;
             }
-        };
+        }
+    });
 
-        const checkMandatory = () => {
-            const tr_arr = document.querySelector("tbody").children;
-            let j = -1;
-            let x = 0;
-            const taskArr = [];
+    if (x > 0) {
+        const modalAlert = document.querySelector("#img-mand-alert");
+        if (modalAlert) {
+            modalAlert.querySelector(".modal-body").innerHTML = `<span>${taskArr.join(', ')}</span><br><span>The above tasks are mandatory to upload images</span>`;
+            $('#img-mand-alert').modal('show'); // Assuming jQuery is being used
+        }
+        return true;
+    } else {
+        return false;
+    }
+};
 
-            Array.from(tr_arr).forEach((row, i) => {
-                if (i === 0) return; // Skip the first row if it's a header
+// Event listener for the submit button
+document.querySelector("#submit-btn").addEventListener("click", async () => {
+    const imgMandate = checkMandatory();
+    if (!imgMandate) {
+        loaderStart();
+        try {
+            const addRecords = await addRecord();
+            console.log("Records Added:", addRecords);
 
-                j++;
-                const img_mandat = row.querySelector(".img-man").textContent;
-                const checkImg2 = document.getElementById(`img_prev${j}`);
-                console.log(img_mandat, checkImg2.src);
+            const addImageResponse = await addImage();
+            console.log("Image Added:", addImageResponse);
 
-                if (img_mandat === "true" || img_mandat === true) {
-                    if (checkImg2.src.includes("creatorapp.zoho.in")) {
-                        const task_name = row.querySelector("td:nth-child(3)").textContent;
-                        taskArr.push(task_name);
-                        x++;
-                    }
-                }
-            });
+            const addedUser = await submittedUser();
+            console.log("User Submitted:", addedUser);
 
-            if (x > 0) {
-                const modal_alert = document.querySelector("#img-mand-alert");
-                if (modal_alert) {
-                    modal_alert.querySelector(".modal-body").innerHTML = `<span>${taskArr.join(', ')}</span><br><span>The above tasks are mandatory to upload images</span>`;
-                    $(`#img-mand-alert`).modal('show');
-                }
-                return true;
-            } else {
-                return false;
-            }
-        };
+            const countRecords = await count();
+            console.log("Count Records:", countRecords);
 
-        document.querySelector("#submit-btn").addEventListener("click", async () => {
-            const imgMandate = checkMandatory();
-            if (!imgMandate) {
-                loaderStart();
-                try {
-                    const addRecords = await addRecord();
-                    console.log("Records Added:", addRecords);
+            const addSign = await updateSignature();
+            console.log("Signature Added:", addSign);
 
-                    const add_image = await addImage();
-                    console.log("Image Added:", add_image);
+            loaderEnd("Records Successfully Added!"); // Moved here to indicate success
 
-                    const added_user = await submittedUser();
-                    console.log("User Submitted:", added_user);
+        } catch (err) {
+            loaderEnd(err); // Display error message in modal
+        } 
+    }
+});
 
-                    const count_records = await count();
-                    console.log("Count Records:", count_records);
-                    
-                    const addSign = await updateSignature();
-                    console.log("Signature Added:", addSign);
-                } catch (err) {
-                    loaderEnd(err);
-                    console.error("Error adding records:", err);
-                }finally{
-                    loaderEnd("Records Successfully Added!");
-                }
-
-                
-            }
-        });
 
         document.querySelector("#go-next").addEventListener("click", () => {
             const user_id = ZOHO.CREATOR.UTIL.getInitParams().loginUser;
