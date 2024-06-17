@@ -783,7 +783,7 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
 
             const addSign = await updateSignature();
             console.log("Signature Added:", addSign);
-
+            alert("Everything Runs");
             loaderEnd("Records Successfully Added!"); // Moved here to indicate success
 
         } catch (err) {
