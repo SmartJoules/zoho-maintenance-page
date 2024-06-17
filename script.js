@@ -712,14 +712,14 @@ ZOHO.CREATOR.init()
             document.body.style.overflow = "hidden"; // Better approach to prevent scrolling
         };
 
-        const loaderEnd = () => {
+        const loaderEnd = (msg) => {
             const wrapper = document.getElementsByClassName("wrapper")[0];
             if (wrapper) wrapper.style.display = "none";
             document.body.style.overflow = "auto";
             const modal_alert = document.querySelector("#img-mand-alert");
             if (modal_alert) {
                 modal_alert.querySelector(".modal-title").textContent = "";
-                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">Record Successfully Added!</span>`;
+                modal_alert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">${msg}</span>`;
                 $(`#img-mand-alert`).modal('show');
             }
         };
@@ -767,6 +767,7 @@ ZOHO.CREATOR.init()
                     const addRecords = await addRecord();
                     console.log("Records Added:", addRecords);
                 } catch (err) {
+                    loaderEnd(err);
                     console.error("Error adding records:", err);
                 }
 
@@ -797,7 +798,7 @@ ZOHO.CREATOR.init()
                 // } catch (err) {
                 //     console.error("Error updating signature:", err);
                 // }
-                loaderEnd();
+                loaderEnd("Records Successfully Added!");
             }
         });
 
