@@ -191,7 +191,7 @@ ZOHO.CREATOR.init()
                         </div>${newRecordArr[i].Image_Mandatory == "false" ? `` : `<span class="text-danger fw-bold px-1">*</span>`}</div></td>`;
                         tr_data += `<td><input type='checkbox' id='flag${i}' ${newRecordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
                         tr_data += `<td><input type='text' id='remark${i}' class='form-control'></td>`;
-                        const img_url = newRecordArr[i].Image ? `https://creatorapp.zohopublic.in${newRecordArr[i].Image}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
+                        const img_url = newRecordArr[i].Image ? `https://creatorapp.zohopublic.in/publishapi/v2/smartjoules/smart-joules-app/report/All_Maintenance_Scheduler_Task_List_Records/${newRecordArr[i].ID}/Image/download?privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
                         tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].ID}</td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].Maintenance_ID}</td>`;
@@ -545,11 +545,6 @@ ZOHO.CREATOR.init()
 
 
         const submittedUser = async () => {
-            if (typeof document.querySelector !== 'function' || typeof document.getElementsByClassName !== 'function') {
-                console.error("Browser does not support querySelector or getElementsByClassName");
-                return;
-            }
-
             const addedUserElement = document.querySelector("#added-user");
             if (!addedUserElement) return;
 
@@ -766,6 +761,8 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
             const addRecords = await addRecord();
             console.log("Records Added:", addRecords);
 
+            loaderEnd("Records Successfully Added!");
+
             const addImageResponse = await addImage();
             console.log("Image Added:", addImageResponse);
 
@@ -777,8 +774,8 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
 
             const addSign = await updateSignature();
             console.log("Signature Added:", addSign);
-            
-            loaderEnd("Records Successfully Added!");
+
+           
             // Moved here to indicate success
 
         } catch (err) {
