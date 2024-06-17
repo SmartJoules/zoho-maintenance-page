@@ -379,10 +379,11 @@ ZOHO.CREATOR.init()
                     id: row.children[9].textContent,
                     data: formData,
                 };
-                alert ("Its Fine");
+                
                 return ZOHO.CREATOR.API.updateRecord(config);
                
             });
+            alert(promises);
 
             try {
                 const results = await Promise.all(promises);
