@@ -331,60 +331,66 @@ ZOHO.CREATOR.init()
         canva();
 
 
-        const multipleResp =async (resp) => {
-            
-        }
+       
 
         const addRecord = async () => {
             const tr = document.querySelectorAll(".table-row");
-            let promises = [];
-            for (let i = 0; i < tr.length; i++) {
-                const response = document.querySelector(`#resp-opt${i}`).lastChild.value ;
-                if(response){
-                    const flag_obj = document.querySelector("#flag" + i);
-                    const flag_resp = flag_obj.checked ? true : false;
-                   const resp_option =  document.querySelector(`#response-type${i}`).textContent;
-                   const remark_output = document.querySelector(`#remark${i}`).value;
-                   let choice_id = "";
-                   if (resp_option == "Multiple Choice") {
-                    console.log(resp_option, response);
+            const promises = Array.from(tr).map(async (row, i) => {
+                const responseElement = document.querySelector(`#resp-opt${i}`).lastChild;
+                if (!responseElement || !responseElement.value) return;
+        
+                const response = responseElement.value;
+                const flag_resp = document.querySelector(`#flag${i}`).checked;
+                const resp_option = document.querySelector(`#response-type${i}`).textContent;
+                const remark_output = document.querySelector(`#remark${i}`).value || "";
+        
+                let choice_id = "";
+                if (resp_option === "Multiple Choice") {
                     try {
-                        config = {
-                            appName : "smart-joules-app",
-                         reportName : "All_Maintanance_Task_Db",
+                        const choiceConfig = {
+                            appName: "smart-joules-app",
+                            reportName: "All_Maintanance_Task_Db",
                             criteria: `Single_Line == "${response}"`,
-                       }
-                        const choice_resp = await ZOHO.CREATOR.API.getAllRecords(config);
-                        const choice_data = choice_resp.data[0];
-                        choice_id = choice_data.ID;
+                        };
+                        const choice_resp = await ZOHO.CREATOR.API.getAllRecords(choiceConfig);
+                        choice_id = choice_resp.data[0].ID;
                     } catch (err) {
                         console.error('Error fetching multiple choice response:', err);
-                        continue;
+                        return;
                     }
                 }
-                 formData = {
-                    "data":  {
-                        "Remarks": remark_output ? remark_output : "",
+        
+                const formData = {
+                    "data": {
+                        "Remarks": remark_output,
                         "Status": "Completed",
-                        "Response_Option": (resp_option == "Multiple Choice") ? choice_id : null,
-                        "Response_Option1": (resp_option == "Expense" || resp_option == "Consumption") ? response : "",
-                        "Response_Amount": (resp_option == "Number" || resp_option == "Meter Reading") ? response : "",
-                        "Response_Text": (resp_option == "Text") ? response : "",
-                        "Response_Value": response ? response : "",
-                        "Flags_For_Review": flag_resp ? flag_resp : false,
+                        "Response_Option": resp_option === "Multiple Choice" ? choice_id : "",
+                        "Response_Option1": ["Expense", "Consumption"].includes(resp_option) ? response : "",
+                        "Response_Amount": ["Number", "Meter Reading"].includes(resp_option) ? response : "",
+                        "Response_Text": resp_option == "Text" ? response : "",
+                        "Response_Value": response,
+                        "Flags_For_Review": flag_resp,
                     }
-                }
-               var config = {
+                };
+        
+                const config = {
                     appName: "smart-joules-app",
                     reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                    id: tr[i].children[9].textContent,
+                    id: row.children[9].textContent,
                     data: formData,
-                }
-                 promises.push(ZOHO.CREATOR.API.updateRecord(config));
-                }
+                };
+        
+                return ZOHO.CREATOR.API.updateRecord(config);
+            });
+        
+            try {
+                const results = await Promise.all(promises);
+                return results;
+            } catch (err) {
+                console.error('Error in addRecord:', err);
             }
-            return Promise.all(promises);
-        }
+        };
+        
 
 
         const addImage = async () => {
@@ -779,7 +785,7 @@ ZOHO.CREATOR.init()
         document.querySelector("#submit-btn").addEventListener("click", async () => {           
                 const imgMandate = checkMandatory();
                 if (imgMandate == false) {
-                    await loaderStart();
+                    loaderStart();
                     try{
                         const addRecords = await addRecord();
                         console.log("Records Added:" + addRecords);
@@ -815,7 +821,7 @@ ZOHO.CREATOR.init()
                     catch(err){
                         console.log(err);
                     }
-                    await LoaderEnd();
+                    LoaderEnd();
                 }
         })
         document.querySelector("#go-next").addEventListener("click", () => {
