@@ -191,7 +191,7 @@ ZOHO.CREATOR.init()
                         </div>${newRecordArr[i].Image_Mandatory == "false" ? `` : `<span class="text-danger fw-bold px-1">*</span>`}</div></td>`;
                         tr_data += `<td><input type='checkbox' id='flag${i}' ${newRecordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
                         tr_data += `<td><input type='text' id='remark${i}' class='form-control'></td>`;
-                        const img_url = newRecordArr[i].Image ? `https://creatorapp.zohopublic.in/publishapi/v2/smartjoules/smart-joules-app/report/All_Maintenance_Scheduler_Task_List_Records/${newRecordArr[i].ID}/Image/download?privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
+                        const img_url = newRecordArr[i].Image ? `https://creatorapp.zohopublic.in${newRecordArr[i].Image}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
                         tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].ID}</td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].Maintenance_ID}</td>`;
@@ -342,7 +342,7 @@ ZOHO.CREATOR.init()
                 const flag_resp = document.querySelector(`#flag${i}`).checked;
                 const resp_option = document.querySelector(`#response-type${i}`).textContent;
                 const remark_output = document.querySelector(`#remark${i}`).value || "";
-               
+
                 let choice_id = "";
                 if (resp_option === "Multiple Choice") {
                     try {
@@ -379,12 +379,16 @@ ZOHO.CREATOR.init()
                     id: row.children[9].textContent,
                     data: formData,
                 };
-                
-                 ZOHO.CREATOR.API.updateRecord(config);
-               
+
+                return ZOHO.CREATOR.API.updateRecord(config);
             });
-                
-                
+
+            try {
+                const results = await Promise.all(promises);
+                return results;
+            } catch (err) {
+                console.error('Error in addRecord:', err);
+            }
         };
 
 
@@ -417,8 +421,15 @@ ZOHO.CREATOR.init()
                     file: resp_img_value,
                 };
 
-                 ZOHO.CREATOR.API.uploadFile(config);
+                return ZOHO.CREATOR.API.uploadFile(config);
             });
+
+            try {
+                const results = await Promise.all(promises.filter(p => p));
+                return results;
+            } catch (err) {
+                console.error('Error in addImage:', err);
+            }
         };
 
 
@@ -562,10 +573,14 @@ ZOHO.CREATOR.init()
                 };
 
               
-                     ZOHO.CREATOR.API.updateRecord(config);
+                    return ZOHO.CREATOR.API.updateRecord(config);
             });
 
-           
+            try {
+                return await Promise.all(promises);
+            } catch (err) {
+                console.error("Error in submittedUser:", err);
+            }
         };
 
 
@@ -608,14 +623,19 @@ ZOHO.CREATOR.init()
                             id: schedulerId,
                             data: formData,
                         };
-                         ZOHO.CREATOR.API.updateRecord(configStatus);
+                        return ZOHO.CREATOR.API.updateRecord(configStatus);
                     }
                 } catch (err) {
                     console.error(`Error processing scheduler ID ${schedulerId}:`, err);
                 }
             });
 
-          
+            try {
+                const results = await Promise.all(promises.filter(p => p));
+                return results;
+            } catch (err) {
+                console.error('Error in count function:', err);
+            }
         };
 
 
@@ -664,7 +684,11 @@ ZOHO.CREATOR.init()
                 };
 
                 
-                     ZOHO.CREATOR.API.uploadFile(config);
+                    return ZOHO.CREATOR.API.uploadFile(config);
+            });
+
+            return Promise.all(promises).catch(err => {
+                console.error('Error updating signature:', err);
             });
         };
 
@@ -734,24 +758,22 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
         loaderStart();
         try {
             
-             await addRecord();
-            // console.log("Records Added:", addRecords);
+            const addRecords = await addRecord();
+            console.log("Records Added:", addRecords);
 
+            const addImageResponse = await addImage();
+            console.log("Image Added:", addImageResponse);
 
-             await addImage();
-            // console.log("Image Added:", addImageResponse);
+            const addedUser = await submittedUser();
+            console.log("User Submitted:", addedUser);
 
-             await submittedUser();
-            // console.log("User Submitted:", addedUser);
+            const countRecords = await count();
+            console.log("Count Records:", countRecords);
 
-           await count();
-            // console.log("Count Records:", countRecords);
-
-            await updateSignature();
-            // console.log("Signature Added:", addSign);
-
+            const addSign = await updateSignature();
+            console.log("Signature Added:", addSign);
+            
             loaderEnd("Records Successfully Added!");
-           
             // Moved here to indicate success
 
         } catch (err) {
