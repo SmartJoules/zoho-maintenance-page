@@ -342,7 +342,7 @@ ZOHO.CREATOR.init()
                 const flag_resp = document.querySelector(`#flag${i}`).checked;
                 const resp_option = document.querySelector(`#response-type${i}`).textContent;
                 const remark_output = document.querySelector(`#remark${i}`).value || "";
-                alert ("Its Fine");
+               
                 let choice_id = "";
                 if (resp_option === "Multiple Choice") {
                     try {
@@ -379,8 +379,9 @@ ZOHO.CREATOR.init()
                     id: row.children[9].textContent,
                     data: formData,
                 };
-
+                alert ("Its Fine");
                 return ZOHO.CREATOR.API.updateRecord(config);
+               
             });
 
             try {
