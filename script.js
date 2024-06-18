@@ -713,11 +713,14 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
             const addSign = await updateSignature();
             console.log("Signature Added:", addSign);
 
-            loaderEnd("Records Successfully Added!");
-
+            
         } catch (err) {
             loaderEnd(err); 
         } 
+        finally{
+            loaderEnd("Records Successfully Added!");
+
+        }
     }
 });
         document.querySelector("#go-next").addEventListener("click", () => {
