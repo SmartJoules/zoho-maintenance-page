@@ -281,10 +281,10 @@ ZOHO.CREATOR.init()
             else if (filter == "true") {
                 createTable((query_start_date != "null" && query_end_date != "null") ? query_start_date : "", (query_start_date != "null" && query_end_date != "null") ? query_end_date : "", (site != "null") ? site : "", (area != "null") ? area : "");
             }
-
-
         }
+
         queryFilter();
+
         const canva = () => {
             var canvas = document.querySelector("#signature-pad");
             var ctx = canvas.getContext('2d');
@@ -342,7 +342,6 @@ ZOHO.CREATOR.init()
                 const flag_resp = document.querySelector(`#flag${i}`).checked;
                 const resp_option = document.querySelector(`#response-type${i}`).textContent;
                 const remark_output = document.querySelector(`#remark${i}`).value || "";
-
                 let choice_id = "";
                 if (resp_option === "Multiple Choice") {
                     try {
@@ -379,16 +378,10 @@ ZOHO.CREATOR.init()
                     id: row.children[9].textContent,
                     data: formData,
                 };
-
-                return ZOHO.CREATOR.API.updateRecord(config);
+                const result = await ZOHO.CREATOR.API.updateRecord(config);
+                return result;
             });
-
-            try {
-                const results = await Promise.all(promises);
-                return results;
-            } catch (err) {
-                console.error('Error in addRecord:', err);
-            }
+            return promises;
         };
 
 
@@ -396,7 +389,7 @@ ZOHO.CREATOR.init()
 
         const addImage = async () => {
             const trCollection = document.getElementsByClassName("table-row");
-            const promises = Array.from(trCollection).map((row, i) => {
+            const promises = Array.from(trCollection).map(async(row, i) => {
                 const responseElement = document.querySelector(`#resp-opt${i}`);
                 if (!responseElement) return;
 
@@ -421,15 +414,10 @@ ZOHO.CREATOR.init()
                     file: resp_img_value,
                 };
 
-                return ZOHO.CREATOR.API.uploadFile(config);
+                const result = await ZOHO.CREATOR.API.uploadFile(config);
+                return result;
             });
-
-            try {
-                const results = await Promise.all(promises.filter(p => p));
-                return results;
-            } catch (err) {
-                console.error('Error in addImage:', err);
-            }
+            return promises;
         };
 
 
