@@ -375,7 +375,7 @@ ZOHO.CREATOR.init()
                     id: row.children[9].textContent,
                     data: formData,
                 };
-                const result =   ZOHO.CREATOR.API.updateRecord(config);
+                const result = await  ZOHO.CREATOR.API.updateRecord(config);
                 return result;
             });
             return promises;
