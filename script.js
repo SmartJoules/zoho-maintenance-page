@@ -552,7 +552,7 @@ ZOHO.CREATOR.init()
                 }
             };
 
-            const promises = schedulerIds.map(id => {
+            const promises = schedulerIds.map( async id => {
                 const config = {
                     appName: "smart-joules-app",
                     reportName: "New_Maintenance_Scheduler_Report",
@@ -561,14 +561,11 @@ ZOHO.CREATOR.init()
                 };
 
               
-                    return ZOHO.CREATOR.API.updateRecord(config);
+                    const result = await ZOHO.CREATOR.API.updateRecord(config);
+                    return result;
             });
+            return promises;
 
-            try {
-                return await Promise.all(promises);
-            } catch (err) {
-                console.error("Error in submittedUser:", err);
-            }
         };
 
 
@@ -577,10 +574,9 @@ ZOHO.CREATOR.init()
 
         const count = async () => {
             const table_rows = Array.from(document.getElementsByClassName("table-row"));
-            const main_arr = table_rows.map(row => row.children[10].textContent);
+            const main_arr = table_rows.map(async row => row.children[10].textContent);
             const schedulerArr = [...new Set(main_arr)];
             const promises = schedulerArr.map(async (schedulerId) => {
-                try {
                     const countConfig = {
                         appName: "smart-joules-app",
                         reportName: "All_Maintenance_Scheduler_Task_List_Records",
@@ -611,34 +607,20 @@ ZOHO.CREATOR.init()
                             id: schedulerId,
                             data: formData,
                         };
-                        return ZOHO.CREATOR.API.updateRecord(configStatus);
+                        const result = await ZOHO.CREATOR.API.updateRecord(configStatus);
+                        return result
                     }
-                } catch (err) {
-                    console.error(`Error processing scheduler ID ${schedulerId}:`, err);
-                }
+                    return promises;
+               
             });
-
-            try {
-                const results = await Promise.all(promises.filter(p => p));
-                return results;
-            } catch (err) {
-                console.error('Error in count function:', err);
-            }
         };
 
 
         const updateSignature = () => {
-            if (typeof document.getElementsByClassName !== 'function' ||
-                typeof document.getElementById !== 'function' ||
-                typeof atob !== 'function' ||
-                typeof Promise.all !== 'function') {
-                console.error("Browser does not support required functions");
-                return;
-            }
 
             const promises = [];
             const table_rows = Array.from(document.getElementsByClassName("table-row"));
-            const main_arr = table_rows.map(row => row.children[10].textContent);
+            const main_arr = table_rows.map(async row => row.children[10].textContent);
             const schedulerArr = [...new Set(main_arr)];
 
             const dataURLtoBlob = (dataURL) => {
@@ -672,12 +654,11 @@ ZOHO.CREATOR.init()
                 };
 
                 
-                    return ZOHO.CREATOR.API.uploadFile(config);
+                    const result = ZOHO.CREATOR.API.uploadFile(config);
+                    return result;
             });
-
-            return Promise.all(promises).catch(err => {
-                console.error('Error updating signature:', err);
-            });
+            return promises;
+           
         };
 
 
@@ -759,7 +740,7 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
             // console.log("Count Records:", countRecords);
 
             // const addSign = await updateSignature();
-            console.log("Signature Added:", addSign);
+            // console.log("Signature Added:", addSign);
             
             loaderEnd("Records Successfully Added!");
             // Moved here to indicate success
