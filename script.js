@@ -329,9 +329,6 @@ ZOHO.CREATOR.init()
         }
         canva();
 
-
-
-
         const addRecord = async () => {
             const tr = document.querySelectorAll(".table-row");
             const promises = Array.from(tr).map(async (row, i) => {
@@ -378,14 +375,11 @@ ZOHO.CREATOR.init()
                     id: row.children[9].textContent,
                     data: formData,
                 };
-                const result = await ZOHO.CREATOR.API.updateRecord(config);
+                const result =   ZOHO.CREATOR.API.updateRecord(config);
                 return result;
             });
             return promises;
         };
-
-
-
 
         const addImage = async () => {
             const trCollection = document.getElementsByClassName("table-row");
@@ -561,20 +555,15 @@ ZOHO.CREATOR.init()
                 };
 
               
-                    const result = await ZOHO.CREATOR.API.updateRecord(config);
-                    return result;
+                    return await ZOHO.CREATOR.API.updateRecord(config);
             });
             return promises;
 
         };
 
-
-
-
-
-        const count = async () => {
+        const count = () => {
             const table_rows = Array.from(document.getElementsByClassName("table-row"));
-            const main_arr = table_rows.map(async row => row.children[10].textContent);
+            const main_arr = table_rows.map(row => row.children[10].textContent);
             const schedulerArr = [...new Set(main_arr)];
             const promises = schedulerArr.map(async (schedulerId) => {
                     const countConfig = {
@@ -596,7 +585,7 @@ ZOHO.CREATOR.init()
                     if (all_rec_count !== undefined && complete_count !== undefined) {
                         const formData = {
                             data: {
-                                Status: complete_count === all_rec_count ? "Completed" : "Pending",
+                                Status: complete_count == all_rec_count ? "Completed" : "Pending",
                                 Progress: `${complete_count} / ${all_rec_count}`
                             }
                         };
@@ -605,73 +594,56 @@ ZOHO.CREATOR.init()
                             appName: "smart-joules-app",
                             reportName: "New_Maintenance_Scheduler_Report",
                             id: schedulerId,
-                            data: formData,
+                            data: formData
                         };
-                        const result = await ZOHO.CREATOR.API.updateRecord(configStatus);
-                        return result
+                        return await ZOHO.CREATOR.API.updateRecord(configStatus);
                     }
-                    return promises;
-               
             });
+            return promises;
         };
 
-
-        const updateSignature = () => {
-
-            const promises = [];
-            const table_rows = Array.from(document.getElementsByClassName("table-row"));
-            const main_arr = table_rows.map(async row => row.children[10].textContent);
+        const updateSignature = async () => {
+            promises = [];
+            const table_row = document.getElementsByClassName("table-row");
+            const main_arr = [];
+            for (let k = 0; k < table_row.length; k++) {
+                main_arr.push(table_row[k].children[10].textContent);
+            }
             const schedulerArr = [...new Set(main_arr)];
-
-            const dataURLtoBlob = (dataURL) => {
-                const [header, data] = dataURL.split(',');
-                const byteString = atob(data);
-                const mimeString = header.split(':')[1].split(';')[0];
+            function dataURLtoBlob(dataURL) {
+                const byteString = atob(dataURL.split(',')[1]);
+                const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
                 const ab = new ArrayBuffer(byteString.length);
                 const ia = new Uint8Array(ab);
                 for (let i = 0; i < byteString.length; i++) {
                     ia[i] = byteString.charCodeAt(i);
                 }
                 return new Blob([ab], { type: mimeString });
-            };
-
-            const canvas = document.getElementById('signature-pad');
-            if (!canvas || typeof canvas.toDataURL !== 'function') {
-                console.error("Canvas or toDataURL is not supported in this browser");
-                return;
             }
-
+            const canvas = document.getElementById('signature-pad');
             const dataURL = canvas.toDataURL();
             const img_url = dataURLtoBlob(dataURL);
-
-            schedulerArr.forEach(id => {
-                const config = {
+            for (let i = 0; i < schedulerArr.length; i++) {
+                var config = {
                     appName: "smart-joules-app",
                     reportName: "New_Maintenance_Scheduler_Report",
-                    id,
+                    id: schedulerArr[i],
                     fieldName: "Signature",
-                    file: img_url || null,
-                };
-
-                
-                    const result = ZOHO.CREATOR.API.uploadFile(config);
-                    return result;
-            });
+                    file: img_url ? img_url : null,
+                }
+                promises.push(await ZOHO.CREATOR.API.uploadFile(config));
+            }
             return promises;
-           
-        };
+        }
 
-
-
-        // Function to start the loader
 const loaderStart = () => {
     const wrapper = document.getElementsByClassName("wrapper")[0];
     if (wrapper) wrapper.style.display = "block";
     document.body.style.overflow = "hidden"; 
 };
 
-// Function to stop the loader and show a modal alert with a message
 const loaderEnd = (msg) => {
+    
     const wrapper = document.getElementsByClassName("wrapper")[0];
     if (wrapper) wrapper.style.display = "none";
     document.body.style.overflow = "auto";
@@ -680,7 +652,7 @@ const loaderEnd = (msg) => {
     if (modalAlert) {
         modalAlert.querySelector(".modal-title").textContent = "";
         modalAlert.querySelector(".modal-body").innerHTML = `<span class="fw-bold">${msg}</span>`;
-        $('#img-mand-alert').modal('show'); // Assuming jQuery is being used
+        $('#img-mand-alert').modal('show'); 
     }
 };
 
@@ -692,7 +664,7 @@ const checkMandatory = () => {
     const taskArr = [];
 
     Array.from(trArr).forEach((row, i) => {
-        if (i === 0) return; // Skip the first row if it's a header
+        if (i === 0) return; 
 
         j++;
         const imgMandat = row.querySelector(".img-man").textContent;
@@ -726,7 +698,6 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
     if (!imgMandate) {
         loaderStart();
         try {
-            
             const addRecords = await addRecord();
             console.log("Records Added:", addRecords);
 
@@ -741,17 +712,14 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
 
             const addSign = await updateSignature();
             console.log("Signature Added:", addSign);
-            
+
             loaderEnd("Records Successfully Added!");
-            // Moved here to indicate success
 
         } catch (err) {
-            loaderEnd(err); // Display error message in modal
+            loaderEnd(err); 
         } 
     }
 });
-
-
         document.querySelector("#go-next").addEventListener("click", () => {
             const user_id = ZOHO.CREATOR.UTIL.getInitParams().loginUser;
             window.parent.location.href = user_id.includes(".in") ? "https://creatorapp.zoho.in/smartjoules/smart-joules-app/#Form:Maintenance_Task_Filter" : "https://smartjoules.zohocreatorportal.in/#Page:Maintenance_Task_Filter";
