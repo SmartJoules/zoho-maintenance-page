@@ -561,7 +561,7 @@ ZOHO.CREATOR.init()
 
         };
 
-        const count = () => {
+        const count = async () => {
             const table_rows = Array.from(document.getElementsByClassName("table-row"));
             const main_arr = table_rows.map(row => row.children[10].textContent);
             const schedulerArr = [...new Set(main_arr)];
