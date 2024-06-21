@@ -561,56 +561,6 @@ ZOHO.CREATOR.init()
             return Promise.all(promises);
 
         };
-
-        const count = async () => {
-            const tableRows = Array.from(document.getElementsByClassName("table-row"));
-            const mainArr = tableRows.map(row => row.children[10].textContent);
-            const schedulerArr = [...new Set(mainArr)];
-            let promises = [];
-        
-            for (let i = 0; i < schedulerArr.length; i++) {
-                const schedulerId = schedulerArr[i];
-        
-                const countConfig = {
-                    appName: "smart-joules-app",
-                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                    criteria: `Maintenance_Scheduler_ID == ${schedulerId}`
-                };
-                const totalObj = await ZOHO.CREATOR.API.getRecordCount(countConfig);
-                const allRecordCount = totalObj.result.records_count;
-        
-                const completedConfig = {
-                    appName: "smart-joules-app",
-                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                    criteria: `Maintenance_Scheduler_ID == ${schedulerId} && Status == "Completed"`
-                };
-                const completedObj = await ZOHO.CREATOR.API.getRecordCount(completedConfig);
-                const completedCount = completedObj.result.records_count;
-        
-                if (allRecordCount !== undefined && completedCount !== undefined) {
-                    const formData = {
-                        data: {
-                            Status: completedCount == allRecordCount ? "Completed" : "Pending",
-                            Progress: `${completedCount} / ${allRecordCount}`
-                        }
-                    };
-        
-                    const updateConfig = {
-                        appName: "smart-joules-app",
-                        reportName: "Maintenance_Scheduler_Report",
-                        id: schedulerId,
-                        data: formData
-                    };
-        
-                    const updateResult = await ZOHO.CREATOR.API.updateRecord(updateConfig);
-                    promises.push(updateResult);
-                }
-            }
-        
-            return Promise.all(promises);
-        };
-        
-        
         
 
         const updateSignature = async () => {
@@ -717,9 +667,6 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
 
             const addedUser = await submittedUser();
             console.log("User Submitted:", addedUser);
-
-            const countRecords = await count();
-            console.log("Count Records:", countRecords);
 
             const addSign = await updateSignature();
             console.log("Signature Added:", addSign);
