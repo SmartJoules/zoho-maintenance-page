@@ -607,7 +607,7 @@ ZOHO.CREATOR.init()
                 }
             }
         
-            return promises;
+            return Promise.all(promises);
         };
         
         
