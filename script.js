@@ -566,43 +566,47 @@ ZOHO.CREATOR.init()
             const table_rows = Array.from(document.getElementsByClassName("table-row"));
             const main_arr = table_rows.map(row => row.children[10].textContent);
             const schedulerArr = [...new Set(main_arr)];
-            const promises = schedulerArr.map(async (schedulerId) => {
-                    const countConfig = {
-                        appName: "smart-joules-app",
-                        reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                        criteria: `Maintenance_Scheduler_ID == ${schedulerId}`
+            let promises = [];
+        
+            for (let i = 0; i < schedulerArr.length; i++) {
+                const schedulerId = schedulerArr[i];
+                const countConfig = {
+                    appName: "smart-joules-app",
+                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                    criteria: `Maintenance_Scheduler_ID == ${schedulerId}`
+                };
+                const tot_obj = await ZOHO.CREATOR.API.getRecordCount(countConfig);
+                const all_rec_count = tot_obj.result.records_count;
+        
+                const completedConfig = {
+                    appName: "smart-joules-app",
+                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                    criteria: `Maintenance_Scheduler_ID == ${schedulerId} && Status == "Completed"`
+                };
+                const complete_obj = await ZOHO.CREATOR.API.getRecordCount(completedConfig);
+                const complete_count = complete_obj.result.records_count;
+        
+                if (all_rec_count !== undefined && complete_count !== undefined) {
+                    const formData = {
+                        data: {
+                            Status: complete_count == all_rec_count ? "Completed" : "Pending",
+                            Progress: `${complete_count} / ${all_rec_count}`
+                        }
                     };
-                    const tot_obj = await ZOHO.CREATOR.API.getRecordCount(countConfig);
-                    const all_rec_count = tot_obj.result.records_count;
-
-                    const completedConfig = {
+        
+                    const configStatus = {
                         appName: "smart-joules-app",
-                        reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                        criteria: `Maintenance_Scheduler_ID == ${schedulerId} && Status == "Completed"`
+                        reportName: "Maintenance_Scheduler_Report",
+                        id: schedulerId,
+                        data: formData
                     };
-                    const complete_obj = await ZOHO.CREATOR.API.getRecordCount(completedConfig);
-                    const complete_count = complete_obj.result.records_count;
-
-                    if (all_rec_count !== undefined && complete_count !== undefined) {
-                        const formData = {
-                            data: {
-                                Status: complete_count == all_rec_count ? "Completed" : "Pending",
-                                Progress: `${complete_count} / ${all_rec_count}`
-                            }
-                        };
-
-                        const configStatus = {
-                            appName: "smart-joules-app",
-                            reportName: "Maintenance_Scheduler_Report",
-                            id: schedulerId,
-                            data: formData
-                        };
-                        const ret = await ZOHO.CREATOR.API.updateRecord(configStatus);
-                        return ret
-                    }
-            });
+                    promises.push(await ZOHO.CREATOR.API.updateRecord(configStatus));
+                    
+                }
+            }
             return promises;
         };
+        
 
         const updateSignature = async () => {
             promises = [];
