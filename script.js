@@ -590,7 +590,7 @@ ZOHO.CREATOR.init()
                 if (allRecordCount !== undefined && completedCount !== undefined) {
                     const formData = {
                         data: {
-                            Status: completedCount === allRecordCount ? "Completed" : "Pending",
+                            Status: completedCount == allRecordCount ? "Completed" : "Pending",
                             Progress: `${completedCount} / ${allRecordCount}`
                         }
                     };
