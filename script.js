@@ -329,6 +329,91 @@ ZOHO.CREATOR.init()
         }
         canva();
 
+        const addRecord = async () => {
+            const tr = document.querySelectorAll(".table-row");
+            const promises = Array.from(tr).map(async (row, i) => {
+                const responseElement = document.querySelector(`#resp-opt${i}`).lastChild;
+                if (!responseElement || !responseElement.value) return;
+
+                const response = responseElement.value;
+                const flag_resp = document.querySelector(`#flag${i}`).checked;
+                const resp_option = document.querySelector(`#response-type${i}`).textContent;
+                const remark_output = document.querySelector(`#remark${i}`).value || "";
+                let choice_id = "";
+                if (resp_option === "Multiple Choice") {
+                    try {
+                        const choiceConfig = {
+                            appName: "smart-joules-app",
+                            reportName: "All_Maintanance_Task_Db",
+                            criteria: `Single_Line == "${response}"`,
+                        };
+                        const choice_resp = await ZOHO.CREATOR.API.getAllRecords(choiceConfig);
+                        choice_id = choice_resp.data[0].ID;
+                    } catch (err) {
+
+                        console.error('Error fetching multiple choice response:', err);
+                        return;
+                    }
+                }
+
+                const formData = {
+                    "data": {
+                        "Remarks": remark_output,
+                        "Status": "Completed",
+                        "Response_Option": resp_option === "Multiple Choice" ? choice_id : "",
+                        "Response_Option1": ["Expense", "Consumption"].includes(resp_option) ? response : "",
+                        "Response_Amount": ["Number", "Meter Reading"].includes(resp_option) ? response : "",
+                        "Response_Text": resp_option === "Text" ? response : "",
+                        "Response_Value": response,
+                        "Flags_For_Review": flag_resp,
+                    }
+                };
+
+                const config = {
+                    appName: "smart-joules-app",
+                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                    id: row.children[9].textContent,
+                    data: formData,
+                };
+                const result = await  ZOHO.CREATOR.API.updateRecord(config);
+                return result;
+            });
+            return promises;
+        };
+
+        const addImage = async () => {
+            const trCollection = document.getElementsByClassName("table-row");
+            const promises = Array.from(trCollection).map(async(row, i) => {
+                const responseElement = document.querySelector(`#resp-opt${i}`);
+                if (!responseElement) return;
+
+                const response = responseElement.lastChild;
+                if (!response.value || response.value === "null" || response.value === undefined || response.value === null) return;
+
+                const ret_img = document.querySelector(`#img${i}`);
+                const ret_capture_img = document.querySelector(`#img-capture${i}`);
+                if (!ret_img && !ret_capture_img) return;
+
+                const task_id = row.children[9].textContent;
+                const resp_img_value = ret_img?.files[0] || ret_capture_img?.files[0] || "";
+                if (!resp_img_value) return "Invalid Image Format";
+
+                if (!(resp_img_value instanceof Blob)) return "Invalid Image Format";
+
+                const config = {
+                    appName: "smart-joules-app",
+                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                    id: task_id,
+                    fieldName: "Image",
+                    file: resp_img_value,
+                };
+
+                const result = await ZOHO.CREATOR.API.uploadFile(config);
+                return result;
+            });
+            return promises;
+        };
+
 
         let currentCamera = "environment";
         let stream;
@@ -441,6 +526,77 @@ ZOHO.CREATOR.init()
         };
 
 
+        const submittedUser = async () => {
+            const addedUserElement = document.querySelector("#added-user");
+            if (!addedUserElement) return;
+
+            const tableRows = Array.from(document.getElementsByClassName("table-row"));
+            const schedulerIds = Array.from(new Set(tableRows.map(row => row.children[10].textContent)));
+
+            const user_name = addedUserElement.value;
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+            const today = new Date();
+            const current_date = `${today.getDate()}-${months[today.getMonth()].substring(0, 3)}-${today.getFullYear()}`;
+
+            const formData = {
+                "data": {
+                    "Completed_by": user_name || "",
+                    "Completed_On": current_date
+                }
+            };
+
+            const promises = schedulerIds.map( async id => {
+                const config = {
+                    appName: "smart-joules-app",
+                    reportName: "New_Maintenance_Scheduler_Report",
+                    id: id,
+                    data: formData,
+                };
+
+              
+                    const resp = await ZOHO.CREATOR.API.updateRecord(config);
+                    return resp;
+            });
+            return promises;
+
+        };
+        
+
+        const updateSignature = async () => {
+            promises = [];
+            const table_row = document.getElementsByClassName("table-row");
+            const main_arr = [];
+            for (let k = 0; k < table_row.length; k++) {
+                main_arr.push(table_row[k].children[10].textContent);
+            }
+            const schedulerArr = [...new Set(main_arr)];
+            function dataURLtoBlob(dataURL) {
+                const byteString = atob(dataURL.split(',')[1]);
+                const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                return new Blob([ab], { type: mimeString });
+            }
+            const canvas = document.getElementById('signature-pad');
+            const dataURL = canvas.toDataURL();
+            const img_url = dataURLtoBlob(dataURL);
+            for (let i = 0; i < schedulerArr.length; i++) {
+                var config = {
+                    appName: "smart-joules-app",
+                    reportName: "New_Maintenance_Scheduler_Report",
+                    id: schedulerArr[i],
+                    fieldName: "Signature",
+                    file: img_url ? img_url : null,
+                }
+                promises.push(await ZOHO.CREATOR.API.uploadFile(config));
+            }
+            return promises;
+        }
+
 const loaderStart = () => {
     const wrapper = document.getElementsByClassName("wrapper")[0];
     if (wrapper) wrapper.style.display = "block";
@@ -503,178 +659,28 @@ document.querySelector("#submit-btn").addEventListener("click", async () => {
     if (!imgMandate) {
         loaderStart();
         try {
-            const tableRows = document.querySelectorAll(".table-row");
-            const recordUpdatePromises = [];
-            
-            for (let i = 0; i < tableRows.length; i++) {
-                const currentRow = tableRows[i];
-                recordUpdatePromises.push((async () => {
-                    const responseElement = document.querySelector(`#resp-opt${i}`).lastChild;
-                    if (!responseElement || !responseElement.value) return;
-            
-                    const responseValue = responseElement.value;
-                    const flagResponse = document.querySelector(`#flag${i}`).checked;
-                    const responseType = document.querySelector(`#response-type${i}`).textContent;
-                    const remarkValue = document.querySelector(`#remark${i}`).value || "";
-                    let choiceId = "";
-                    if (responseType === "Multiple Choice") {
-                        try {
-                            const choiceConfig = {
-                                appName: "smart-joules-app",
-                                reportName: "All_Maintanance_Task_Db",
-                                criteria: `Single_Line == "${responseValue}"`,
-                            };
-                            const choiceResponse = await ZOHO.CREATOR.API.getAllRecords(choiceConfig);
-                            choiceId = choiceResponse.data[0].ID;
-                        } catch (err) {
-                            console.error('Error fetching multiple choice response:', err);
-                            return;
-                        }
-                    }
-            
-                    const formData = {
-                        "data": {
-                            "Remarks": remarkValue,
-                            "Status": "Completed",
-                            "Response_Option": responseType === "Multiple Choice" ? choiceId : "",
-                            "Response_Option1": ["Expense", "Consumption"].includes(responseType) ? responseValue : "",
-                            "Response_Amount": ["Number", "Meter Reading"].includes(responseType) ? responseValue : "",
-                            "Response_Text": responseType === "Text" ? responseValue : "",
-                            "Response_Value": responseValue,
-                            "Flags_For_Review": flagResponse,
-                        }
-                    };
-            
-                    const config = {
-                        appName: "smart-joules-app",
-                        reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                        id: currentRow.children[9].textContent,
-                        data: formData,
-                    };
-                    const result = await ZOHO.CREATOR.API.updateRecord(config);
-                    console.log("Records Added: ",result);
-                })());
-            }
+            const addRecords = await addRecord();
+            console.log("Records Added:", addRecords);
 
-            for (const recordUpdatePromise of recordUpdatePromises) {
-                await recordUpdatePromise;
-            }
-            
-            const tableRowsCollection = document.getElementsByClassName("table-row");
-            const fileUploadPromises = [];
-            
-            for (let i = 0; i < tableRowsCollection.length; i++) {
-                const currentRow = tableRowsCollection[i];
-                fileUploadPromises.push((async () => {
-                    const responseElement = document.querySelector(`#resp-opt${i}`);
-                    if (!responseElement) return;
-            
-                    const responseValue = responseElement.lastChild;
-                    if (!responseValue.value || responseValue.value === "null" || responseValue.value === undefined || responseValue.value === null) return;
-            
-                    const imgElement = document.querySelector(`#img${i}`);
-                    const captureImgElement = document.querySelector(`#img-capture${i}`);
-                    if (!imgElement && !captureImgElement) return;
-            
-                    const taskId = currentRow.children[9].textContent;
-                    const imgFile = imgElement?.files[0] || captureImgElement?.files[0] || "";
-                    if (!imgFile) return "Invalid Image Format";
-            
-                    if (!(imgFile instanceof Blob)) return "Invalid Image Format";
-            
-                    const fileUploadConfig = {
-                        appName: "smart-joules-app",
-                        reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                        id: taskId,
-                        fieldName: "Image",
-                        file: imgFile,
-                    };
-            
-                    const result = await ZOHO.CREATOR.API.uploadFile(fileUploadConfig);
-                    console.log("Images Added: "+result);
-                })());
-            }
+            const addImageResponse = await addImage();
+            console.log("Image Added:", addImageResponse);
 
-            for (const fileUploadPromise of fileUploadPromises) {
-                await fileUploadPromise;
-            }
+            const addedUser = await submittedUser();
+            console.log("User Submitted:", addedUser);
+
+            const addSign = await updateSignature();
+            console.log("Signature Added:", addSign);
+
             
-            let signaturePromises = [];
-            const tableRowsForSignature = document.getElementsByClassName("table-row");
-            const schedulerIds = [];
-            for (let k = 0; k < tableRowsForSignature.length; k++) {
-                schedulerIds.push(tableRowsForSignature[k].children[10].textContent);
-            }
-            const uniqueSchedulerIds = [...new Set(schedulerIds)];
-            function dataURLtoBlob(dataURL) {
-                const byteString = atob(dataURL.split(',')[1]);
-                const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-                const ab = new ArrayBuffer(byteString.length);
-                const ia = new Uint8Array(ab);
-                for (let i = 0; i < byteString.length; i++) {
-                    ia[i] = byteString.charCodeAt(i);
-                }
-                return new Blob([ab], { type: mimeString });
-            }
-            const signatureCanvas = document.getElementById('signature-pad');
-            const signatureDataURL = signatureCanvas.toDataURL();
-            const signatureBlob = dataURLtoBlob(signatureDataURL);
-            for (let i = 0; i < uniqueSchedulerIds.length; i++) {
-                const signatureConfig = {
-                    appName: "smart-joules-app",
-                    reportName: "New_Maintenance_Scheduler_Report",
-                    id: uniqueSchedulerIds[i],
-                    fieldName: "Signature",
-                    file: signatureBlob ? signatureBlob : null,
-                };
-                const result = await ZOHO.CREATOR.API.uploadFile(signatureConfig);
-                console.log("Signature Added: ", result);
-                signaturePromises.push(result);
-                
-            }
-
-            for (const signaturePromise of signaturePromises) {
-               const sign_resp = await  signaturePromise;
-            }
-
-            const addedUserElement = document.querySelector("#added-user");
-
-            const userName = addedUserElement.value;
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-            const today = new Date();
-            const currentDate = `${today.getDate()}-${months[today.getMonth()].substring(0, 3)}-${today.getFullYear()}`;
-
-            const userFormData = {
-                "data": {
-                    "Completed_by": userName || "",
-                    "Completed_On": currentDate
-                }
-            };
-
-            const userUpdatePromises = uniqueSchedulerIds.map(async id => {
-                const userConfig = {
-                    appName: "smart-joules-app",
-                    reportName: "New_Maintenance_Scheduler_Report",
-                    id: id,
-                    data: userFormData,
-                };
-
-                const response = await ZOHO.CREATOR.API.updateRecord(userConfig);
-                console.log("User Updated: " ,response);
-            });
-
-            for (const userUpdatePromise of userUpdatePromises) {
-                await userUpdatePromise;
-            }
         } catch (err) {
             loaderEnd(err); 
-        } finally {
+        } 
+        finally{
             loaderEnd("Records Successfully Added!");
+
         }
     }
 });
-
         document.querySelector("#go-next").addEventListener("click", () => {
             const user_id = ZOHO.CREATOR.UTIL.getInitParams().loginUser;
             window.parent.location.href = user_id.includes(".in") ? "https://creatorapp.zoho.in/smartjoules/smart-joules-app/#Form:Maintenance_Task_Filter" : "https://smartjoules.zohocreatorportal.in/#Page:Maintenance_Task_Filter";
