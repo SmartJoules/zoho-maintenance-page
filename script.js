@@ -558,7 +558,7 @@ ZOHO.CREATOR.init()
                     const resp = await ZOHO.CREATOR.API.updateRecord(config);
                     return resp;
             });
-            return Promise.all(promises);
+            return promises;
 
         };
         
