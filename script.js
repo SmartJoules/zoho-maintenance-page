@@ -350,7 +350,6 @@ ZOHO.CREATOR.init()
                         const choice_resp = await ZOHO.CREATOR.API.getAllRecords(choiceConfig);
                         choice_id = choice_resp.data[0].ID;
                     } catch (err) {
-
                         console.error('Error fetching multiple choice response:', err);
                         return;
                     }
