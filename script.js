@@ -55,6 +55,7 @@ ZOHO.CREATOR.init()
                 added_user.value = user_resp.data[0].Completed_by;
             }
             const area_list = [];
+            let k = -1;
             for (let j = 0; j < maintenanceArr.length; j++) {
                 mConfig = {
                     appName: "smart-joules-app",
@@ -67,6 +68,7 @@ ZOHO.CREATOR.init()
                 document.querySelector("#t-body").appendChild(m_tr);
                 const newRecordArr = recordArr.filter(rec => rec.Maintenance_ID == maintenanceArr[j]);
                 for (let i = 0; i < newRecordArr.length; i++) {
+                    k++;
                     area_list.push(newRecordArr[i].Area);
                     if (newRecordArr[i].Task_Name != "Measure Air Flow" && newRecordArr[i].Task_Name != "Expense Inccurred" && newRecordArr[i].Task_Name != "Inventory Consumption") {
 
@@ -97,15 +99,15 @@ ZOHO.CREATOR.init()
                         const audio_file = newRecordArr[i].Audio ? `https://creatorapp.zohopublic.in${newRecordArr[i].Audio}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : "";
                         const video_file = newRecordArr[i].Video ? `https://creatorapp.zohopublic.in${newRecordArr[i].Video}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : "";
                         let tr_data = `<td>${s_no}
-                        <audio class="d-none" id="audioPlayer${i}" controls>
+                        <audio class="d-none" id="audioPlayer${k}" controls>
                             <source src="${audio_file}" type="audio/mpeg">
                           </audio>
                         </td>
                             <td class='text-nowrap'>${newRecordArr[i].Date_field.substring(0, 6)}</td>
-                            <td class='text-start' style='min-width: 200px;'>${newRecordArr[i].Task_Name} ${newRecordArr[i].Audio ? `<span class="fs-6 cursor-pointer" id="audio-${i}"><i class='bi bi-play-fill'></i></span>` : ""}</td>`;
+                            <td class='text-start' style='min-width: 200px;'>${newRecordArr[i].Task_Name} ${newRecordArr[i].Audio ? `<span class="fs-6 cursor-pointer" id="audio-${k}"><i class='bi bi-play-fill'></i></span>` : ""}</td>`;
 
-                        tr_data += `<td class='d-none' id="response-type${i}">${newRecordArr[i].Field_Type.display_value}</td>`;
-                        let select_tag = `<td id='resp-opt${i}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${i}'>
+                        tr_data += `<td class='d-none' id="response-type${k}">${newRecordArr[i].Field_Type.display_value}</td>`;
+                        let select_tag = `<td id='resp-opt${k}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${k}'>
                            <option value=null ${(newRecordArr[i].Response_Option.display_value || newRecordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>`;
                         select_tag += (task_choices.includes("Yes") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>` : "";
                         select_tag += (task_choices.includes("No") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='No' ${(newRecordArr[i].Response_Option.display_value === 'No') ? 'selected' : (newRecordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>` : "";
@@ -147,16 +149,16 @@ ZOHO.CREATOR.init()
                         select_tag += task_choices.includes("Switch working") ? `<option value='Switch working' ${(newRecordArr[i].Response_Option.display_value == 'Switch working' || newRecordArr[i].Response_Option1 === "Switch working") ? 'selected' : ''}>Switch working</option>` : "";
                         select_tag += task_choices.includes("Any vibration found") ? `<option value='Any vibration found' ${(newRecordArr[i].Response_Option.display_value == 'Any vibration found' || newRecordArr[i].Response_Option1 === "Any vibration found") ? 'selected' : ''}>Any vibration found</option>` : "";
                         select_tag += `</select></td>`;
-                        const num_input = `<td id='resp-opt${i}'><input type='number' id='input-reponse${i}' value='${newRecordArr[i].Response_Amount}' class='form-control'></td>`;
-                        const text_input = `<td id='resp-opt${i}'><input type='text' id='input-reponse${i}' value='${newRecordArr[i].Response_Text}' class='form-control'></td>`;
+                        const num_input = `<td id='resp-opt${k}'><input type='number' id='input-reponse${k}' value='${newRecordArr[i].Response_Amount}' class='form-control'></td>`;
+                        const text_input = `<td id='resp-opt${k}'><input type='text' id='input-reponse${k}' value='${newRecordArr[i].Response_Text}' class='form-control'></td>`;
                         const response_options = newRecordArr[i].Field_Type.display_value;
                         const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number" || response_options == "Meter Reading") ? num_input : (response_options == "Text") ? text_input : "";
                         tr_data = tr_data + resp_type;
                         tr_data += `<td><div class='d-flex'><div class="image-field border border-secondary rounded d-flex justify-content-around align-items-center">
-                            <div class="upload text-center cursor-pointer"><label for="img${i}" class="cursor-pointer"><i class="bi bi-image"></i></label><input type="file" id="img${i}" accept="image/*" class="d-none"></div>
+                            <div class="upload text-center cursor-pointer"><label for="img${k}" class="cursor-pointer"><i class="bi bi-image"></i></label><input type="file" id="img${k}" accept="image/*" class="d-none"></div>
                             <div class="capture h-100 text-center cursor-pointer">
-                            <label data-bs-toggle="modal" data-bs-target="#capture${i}" class="cursor-pointer"><i class="bi bi-camera-fill cam-open"></i></label>
-                            <div class="modal fade" id="capture${i}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <label data-bs-toggle="modal" data-bs-target="#capture${k}" class="cursor-pointer"><i class="bi bi-camera-fill cam-open"></i></label>
+                            <div class="modal fade" id="capture${k}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                <div class="modal-dialog">
                                  <div class="modal-content">
                                    <div class="modal-header">
@@ -165,30 +167,30 @@ ZOHO.CREATOR.init()
                                    </div>
                                    <div class="modal-body">
                                    <div class="capture-camera">
-                               <video id="video${i}" class="vid" index="${i}" playsinline autoplay>Video stream not available.</video>
+                               <video id="video${k}" class="vid" index="${k}" playsinline autoplay>Video stream not available.</video>
                              </div>
                                    </div>
                                    <div class="modal-footer">
-                                   <canvas id="canvas${i}" class="d-none"></canvas>
-                                   <input type="file" class="d-none" id="img-capture${i}">
+                                   <canvas id="canvas${k}" class="d-none"></canvas>
+                                   <input type="file" class="d-none" id="img-capture${k}">
                                      <button type="button" class="btn btn-secondary cam-close" data-bs-dismiss="modal">Close</button>
                                      <button type="button" class="btn btn-secondary switch">Switch Camera</button>
-                                     <button type="button" id="startbutton${i}" data-bs-dismiss="modal" class="btn btn-primary capture">Capture</button>
+                                     <button type="button" id="startbutton${k}" data-bs-dismiss="modal" class="btn btn-primary capture">Capture</button>
                                    </div>
                                  </div>
                                </div>
                              </div>
                             </div>
-                            <div class="capture h-100 cursor-pointer"><label class="cursor-pointer h-100 d-flex align-items-center" id="clear-file${i}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
+                            <div class="capture h-100 cursor-pointer"><label class="cursor-pointer h-100 d-flex align-items-center" id="clear-file${k}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
                         </div>${newRecordArr[i].Image_Mandatory == "false" ? `` : `<span class="text-danger fw-bold px-1">*</span>`}</div></td>`;
-                        tr_data += `<td><input type='checkbox' id='flag${i}' ${newRecordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
-                        tr_data += `<td><input type='text' id='remark${i}' class='form-control'></td>`;
+                        tr_data += `<td><input type='checkbox' id='flag${k}' ${newRecordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
+                        tr_data += `<td><input type='text' id='remark${k}' class='form-control'></td>`;
                         const img_url = newRecordArr[i].Image ? `https://creatorapp.zohopublic.in${newRecordArr[i].Image}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
-                        tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${i}'></td>`;
+                        tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${k}'></td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].ID}</td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].Maintenance_ID}</td>`;
-                        tr_data += `<td>${newRecordArr[i].Video ? `<i id="vid${i}-icon" class="bi fs-4 text-primary cursor-pointer bi-play-circle-fill" data-bs-toggle="modal" data-bs-target="#video-pop${i}"></i>
-                        <div class="modal fade" id="video-pop${i}"  aria-hidden="true" data-bs-backdrop="static">
+                        tr_data += `<td>${newRecordArr[i].Video ? `<i id="vid${k}-icon" class="bi fs-4 text-primary cursor-pointer bi-play-circle-fill" data-bs-toggle="modal" data-bs-target="#video-pop${k}"></i>
+                        <div class="modal fade" id="video-pop${k}"  aria-hidden="true" data-bs-backdrop="static">
                           <div class="modal-dialog">
                             <div class="modal-content">
                             <div class="modal-header">
@@ -208,13 +210,13 @@ ZOHO.CREATOR.init()
                         tr.innerHTML = tr_data;
                         const tbody = document.querySelector("#t-body");
                         tbody.appendChild(tr);
-                        const img_obj = document.querySelector(`#img${i}`);
-                        const img_capture_obj = document.querySelector(`#img-capture${i}`);
-                        const img_tag = document.getElementsByClassName("img-tag")[i];
-                        if (newRecordArr[i].Audio) {
-                            document.querySelector(`#audio-${i}`).addEventListener("click", () => {
-                                const audio = document.querySelector(`#audioPlayer${i}`);
-                                const audio_obj = document.querySelector(`#audio-${i}`);
+                        const img_obj = document.querySelector(`#img${k}`);
+                        const img_capture_obj = document.querySelector(`#img-capture${k}`);
+                        const img_tag = document.querySelector(`#img_prev${k}`);
+                        if (newRecordArr[j].Audio) {
+                            document.querySelector(`#audio-${k}`).addEventListener("click", () => {
+                                const audio = document.querySelector(`#audioPlayer${k}`);
+                                const audio_obj = document.querySelector(`#audio-${k}`);
                                 if (audio.paused) {
                                     audio.play();
                                     audio_obj.innerHTML = "<i class='bi bi-pause-fill'></i>";
@@ -226,7 +228,7 @@ ZOHO.CREATOR.init()
                             })
                         }
 
-                        document.querySelector(`#clear-file${i}`).addEventListener("click", function () {
+                        document.querySelector(`#clear-file${k}`).addEventListener("click", function () {
                             img_obj.value = '';
                             img_tag.src = '';
                         })
@@ -686,14 +688,11 @@ ZOHO.CREATOR.init()
 
         // Function to check mandatory image uploads
         const checkMandatory = () => {
-            const trArr = document.querySelector("tbody").children;
+            const trArr = document.querySelector("tr");
             let j = -1;
             let x = 0;
-            const taskArr = [];
-
+            let task_list
             Array.from(trArr).forEach((row, i) => {
-                if (i === 0) return;
-
                 j++;
                 const imgMandat = row.querySelector(".img-man").textContent;
                 const checkImg2 = document.getElementById(`img_prev${j}`);
@@ -701,7 +700,7 @@ ZOHO.CREATOR.init()
                 if (imgMandat === "true" || imgMandat === true) {
                     if (checkImg2.src.includes("creatorapp.zoho.in")) {
                         const taskName = row.querySelector("td:nth-child(3)").textContent;
-                        taskArr.push(taskName);
+                        task_list.push(taskName);
                         x++;
                     }
                 }
@@ -710,7 +709,7 @@ ZOHO.CREATOR.init()
             if (x > 0) {
                 const modalAlert = document.querySelector("#img-mand-alert");
                 if (modalAlert) {
-                    modalAlert.querySelector(".modal-body").innerHTML = `<span>${taskArr.join(', ')}</span><br><span>The above tasks are mandatory to upload images</span>`;
+                    modalAlert.querySelector(".modal-body").innerHTML = `<span>${task_list.join(', ')}</span><br><span>The above tasks are mandatory to upload images</span>`;
                     $('#img-mand-alert').modal('show'); // Assuming jQuery is being used
                 }
                 return true;
