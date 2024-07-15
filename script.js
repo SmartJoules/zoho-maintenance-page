@@ -453,15 +453,6 @@ ZOHO.CREATOR.init()
 
                 const taskId = row.children[9].textContent;
                 const respImgValue = retImg?.files[0] || retCaptureImg?.files[0] || "";
-                if (!respImgValue) {
-                    promises.push(Promise.resolve("Invalid Image Format"));
-                    continue;
-                }
-
-                if (!(respImgValue instanceof Blob)) {
-                    promises.push(Promise.resolve("Invalid Image Format"));
-                    continue;
-                }
 
                 const config = {
                     appName: "smart-joules-app",
@@ -480,7 +471,6 @@ ZOHO.CREATOR.init()
 
                 promises.push(uploadPromise);
             }
-
             return Promise.all(promises);
         };
 
