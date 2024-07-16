@@ -240,7 +240,7 @@ ZOHO.CREATOR.init()
                                 img_tag.src = image_url;
                                 img_capture_obj.value = '';
                                 img_capture_obj.src = '';
-
+                                console.log(img_tag.src);
                             }
                         })
 
@@ -738,7 +738,7 @@ ZOHO.CREATOR.init()
         });
         document.querySelector("#go-next").addEventListener("click", () => {
             const user_id = ZOHO.CREATOR.UTIL.getInitParams().loginUser;
-            window.parent.location.href = user_id.includes(".in") ? "https://creatorapp.zoho.in/smartjoules/smart-joules-app/#Form:Maintenance_Task_Filter" : "https://smartjoules.zohocreatorportal.in/#Page:Maintenance_Task_Filter";
+            window.parent.location.href = user_id.includes(".in") ? "https://creatorapp.zoho.in/smartjoules/smart-joules-app/#Form:Maintenance_Task_Filter" : "https://smartjoules.zohocreatorportal.in/#Form:Maintenance_Task_Filter";
         })
         // ZC End
     });
