@@ -111,9 +111,8 @@ ZOHO.CREATOR.init()
                            <option value=null ${(newRecordArr[i].Response_Option.display_value || newRecordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>`;
                         select_tag += (task_choices.includes("Yes") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>` : "";
                         select_tag += (task_choices.includes("No") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='No' ${(newRecordArr[i].Response_Option.display_value === 'No') ? 'selected' : (newRecordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>` : "";
-                        select_tag += task_choices.includes("Not working") ? `<option value='Not working' ${(newRecordArr[i].Response_Option.display_value == 'Not working' || newRecordArr[i].Response_Option1 === "Not working") ? 'selected' : ''}>Not working</option>` : "";
+    
                         select_tag += task_choices.includes("Alignment correct") ? `<option value='Alignment correct' ${(newRecordArr[i].Response_Option.display_value == 'Alignment correct' || newRecordArr[i].Response_Option1 === "Alignment correct") ? 'selected' : ''}>Alignment correct</option>` : "";
-                        select_tag += task_choices.includes("Not working") ? `<option value='Not working' ${(newRecordArr[i].Response_Option.display_value == 'Not working' || newRecordArr[i].Response_Option1 === "Not working") ? 'selected' : ''}>Not working</option>` : "";
                         select_tag += task_choices.includes("Leakage found") ? `<option value='Leakage found' ${(newRecordArr[i].Response_Option.display_value == 'Leakage found' || newRecordArr[i].Response_Option1 === "Leakage found") ? 'selected' : ''}>Leakage found</option>` : "";
                         select_tag += task_choices.includes("Damage") ? `<option value='Damage' ${(newRecordArr[i].Response_Option.display_value == 'Damage' || newRecordArr[i].Response_Option1 === "Damage") ? 'selected' : ''}>Damage</option>` : "";
                         select_tag += task_choices.includes("No provision") ? `<option value='No provision' ${(newRecordArr[i].Response_Option.display_value == 'No provision' || newRecordArr[i].Response_Option1 === "No provision") ? 'selected' : ''}>No provision</option>` : "";
@@ -125,7 +124,6 @@ ZOHO.CREATOR.init()
                         select_tag += task_choices.includes("Already aligned") ? `<option value='Already aligned' ${(newRecordArr[i].Response_Option.display_value == 'Already aligned' || newRecordArr[i].Response_Option1 === "Already aligned") ? 'selected' : ''}>Already aligned</option>` : "";
                         select_tag += task_choices.includes("Cleaned") ? `<option value='Cleaned' ${(newRecordArr[i].Response_Option.display_value == 'Cleaned' || newRecordArr[i].Response_Option1 === "Cleaned") ? 'selected' : ''}>Cleaned</option>` : "";
                         select_tag += task_choices.includes("Okay") ? `<option value='Okay' ${(newRecordArr[i].Response_Option.display_value == 'Okay' || newRecordArr[i].Response_Option1 === "Okay") ? 'selected' : ''}>Okay</option>` : "";
-                        select_tag += task_choices.includes("Not working") ? `<option value='Not working' ${(newRecordArr[i].Response_Option.display_value == 'Not working' || newRecordArr[i].Response_Option1 === "Not working") ? 'selected' : ''}>Not working</option>` : "";
                         select_tag += task_choices.includes("Already clean") ? `<option value='Already clean' ${(newRecordArr[i].Response_Option.display_value == 'Already clean' || newRecordArr[i].Response_Option1 === "Already clean") ? 'selected' : ''}>Already clean</option>` : "";
                         select_tag += task_choices.includes("Not Okay") ? `<option value='Not Okay' ${(newRecordArr[i].Response_Option.display_value == 'Not Okay' || newRecordArr[i].Response_Option1 === "Not Okay") ? 'selected' : ''}>Not Okay</option>` : "";
                         select_tag += task_choices.includes("Sealed") ? `<option value='Sealed' ${(newRecordArr[i].Response_Option.display_value == 'Sealed' || newRecordArr[i].Response_Option1 === "Sealed") ? 'selected' : ''}>Sealed</option>` : "";
@@ -213,7 +211,7 @@ ZOHO.CREATOR.init()
                         const img_obj = document.querySelector(`#img${k}`);
                         const img_capture_obj = document.querySelector(`#img-capture${k}`);
                         const img_tag = document.querySelector(`#img_prev${k}`);
-                        if (newRecordArr[j].Audio) {
+                        if (newRecordArr[i].Audio) {
                             document.querySelector(`#audio-${k}`).addEventListener("click", () => {
                                 const audio = document.querySelector(`#audioPlayer${k}`);
                                 const audio_obj = document.querySelector(`#audio-${k}`);
@@ -223,7 +221,6 @@ ZOHO.CREATOR.init()
                                 } else {
                                     audio.pause();
                                     audio_obj.innerHTML = "<i class='bi bi-play-fill'></i>";
-
                                 }
                             })
                         }
@@ -354,6 +351,7 @@ ZOHO.CREATOR.init()
                 const response = responseElement.value;
                 const flagChoices = await getFlagChoices(row.children[9].textContent);
                 const flagResp = document.querySelector(`#flag${i}`).checked ? "true" : flagChoices.includes(response)? "true" : "false";
+                console.log(flagResp);
                 const respOption = document.querySelector(`#response-type${i}`).textContent;
                 const remarkOutput = document.querySelector(`#remark${i}`).value || "";
                 let choiceId = "";
