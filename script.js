@@ -1,6 +1,5 @@
 ZOHO.CREATOR.init()
     .then(function (data) {
-
         //   
         var queryParams = ZOHO.CREATOR.UTIL.getQueryParams();
         var maintenance_id = queryParams.maintenance_id;
@@ -158,7 +157,7 @@ ZOHO.CREATOR.init()
                             </div>
                             <div class="capture h-100 cursor-pointer"><label class="cursor-pointer h-100 d-flex align-items-center" id="clear-file${k}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
                         </div>${newRecordArr[i].Image_Mandatory == "false" ? `` : `<span class="text-danger fw-bold px-1">*</span>`}</div>
-                        <div style='font-size: 8px;'>Maximum 5MB</div></td>`;
+                       </td>`;
                         tr_data += `<td><input type='checkbox' id='flag${k}' ${newRecordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
                         tr_data += `<td><input type='text' value="${newRecordArr[i].Remarks}" id='remark${k}' class='form-control'></td>`;
                         const img_url = newRecordArr[i].Image ? `https://creatorapp.zohopublic.in${newRecordArr[i].Image}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
@@ -227,8 +226,6 @@ ZOHO.CREATOR.init()
                             {
                                 console.log(err);
                             }
-
-                        
                         })
 
                         img_obj.addEventListener("change",  async() => {
@@ -238,23 +235,30 @@ ZOHO.CREATOR.init()
                                 img_tag.src = image_url;
                                 img_capture_obj.value = '';
                                 img_capture_obj.src = '';
-                                console.log(img_tag.src);
+                                  try {
+                                    const compressedFile = await compressImage(file, 3, 1024, 1024);
+                                    console.log('Compressed File:', compressedFile);
+                                    const config = {
+                                        appName : "smart-joules-app",
+                                        reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                                        id: newRecordArr[i].ID,
+                                        fieldName: "Image",
+                                        file: compressedFile
+                                    }
+                                    try{
+                                        const resp = await ZOHO.CREATOR.API.uploadFile(config);
+                                        console.log(resp);
+                                    }
+                                    catch(err)
+                                    {
+                                        console.log(err);
+                                    }
 
-                                const config = {
-                                    appName : "smart-joules-app",
-                                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                                    id: newRecordArr[i].ID,
-                                    fieldName: "Image",
-                                    file: file
-                                }
-                                try{
-                                    const resp = await ZOHO.CREATOR.API.uploadFile(config);
-                                    console.log(resp);
-                                }
-                                catch(err)
-                                {
-                                    console.log(err);
-                                }
+                                  } catch (error) {
+                                    console.error('Error compressing the file:', error);
+                                  }
+
+                                
                                 
                             }
                         })
@@ -405,6 +409,58 @@ ZOHO.CREATOR.init()
             }
 
         }
+
+        const compressImage = (file, maxSizeMB, maxWidth, maxHeight)=> {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(file);
+              reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                  let width = img.width;
+                  let height = img.height;
+                  if (width > height) {
+                    if (width > maxWidth) {
+                      height *= maxWidth / width;
+                      width = maxWidth;
+                    }
+                  } else {
+                    if (height > maxHeight) {
+                      width *= maxHeight / height;
+                      height = maxHeight;
+                    }
+                  }
+      
+                  const canvas = document.createElement('canvas');
+                  canvas.width = width;
+                  canvas.height = height;
+                  const ctx = canvas.getContext('2d');
+                  ctx.drawImage(img, 0, 0, width, height);
+      
+                  let quality = 0.9;
+                  let compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                  while (compressedDataUrl.length > maxSizeMB * 1024 * 1024 && quality > 0.1) {
+                    quality -= 0.1;
+                    compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                  }
+      
+                  fetch(compressedDataUrl)
+                    .then(res => res.blob())
+                    .then(blob => {
+                      const compressedFile = new File([blob], file.name, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now(),
+                      });
+                      resolve(compressedFile);
+                    })
+                    .catch(err => reject(err));
+                };
+                img.onerror = (err) => reject(err);
+              };
+              reader.onerror = (err) => reject(err);
+            });
+          }
 
         const queryFilter = () => {
             const query_date = queryParams.date;
@@ -685,21 +741,33 @@ ZOHO.CREATOR.init()
             const image_field = document.querySelector(`#img-capture${index_no}`);
             image_field.files = dataTransfer.files;
             const recID = video.getAttribute("vidid");
-            const config = {
-                appName : "smart-joules-app",
-                reportName: "All_Maintenance_Scheduler_Task_List_Records",
-                id: recID,
-                fieldName: "Image",
-                file: image_field.files[0]
-            }
-            try{
-                const resp = await ZOHO.CREATOR.API.uploadFile(config);
-                console.log(resp);
-            }
-            catch(err)
-            {
-                console.log(err);
-            }
+            const options = {
+                maxSizeMB: 4,
+                useWebWorker: true,
+              };
+              try {
+                const compressedFile = await imageCompression(image_field.files[0], 3, 1024, 1024);
+                console.log('Compressed File:', compressedFile);
+                const config = {
+                    appName : "smart-joules-app",
+                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                    id: recID,
+                    fieldName: "Image",
+                    file: compressedFile
+                }
+                try{
+                    const resp = await ZOHO.CREATOR.API.uploadFile(config);
+                    console.log(resp);
+                }
+                catch(err)
+                {
+                    console.log(err);
+                }
+
+              } catch (error) {
+                console.error('Error compressing the file:', error);
+              }
+
         };
 
 
