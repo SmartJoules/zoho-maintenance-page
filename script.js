@@ -107,52 +107,29 @@ ZOHO.CREATOR.init()
                             <td class='text-start' style='min-width: 200px;'>${newRecordArr[i].Task_Name} ${newRecordArr[i].Audio ? `<span class="fs-6 cursor-pointer" id="audio-${k}"><i class='bi bi-play-fill'></i></span>` : ""}</td>`;
 
                         tr_data += `<td class='d-none' id="response-type${k}">${newRecordArr[i].Field_Type.display_value}</td>`;
-                        let select_tag = `<td id='resp-opt${k}' id='select' style='min-width: 150px;'><select class='form-select' id='input-reponse${k}'>
+                        let select_tag = `<td id='resp-opt${k}' style='min-width: 150px;'><select class='form-select' id='input-reponse${k}'>
                            <option value=null ${(newRecordArr[i].Response_Option.display_value || newRecordArr[i].Response_Option1) ? '' : 'selected'}>Choose</option>`;
                         select_tag += (task_choices.includes("Yes") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='Yes' ${(newRecordArr[i].Response_Option.display_value === 'Yes') ? 'selected' : (newRecordArr[i].Response_Option1 === 'Yes') ? 'selected' : ''}>Yes</option>` : "";
                         select_tag += (task_choices.includes("No") || newRecordArr[i].Task_Name == "Cleaning of Air Filters") ? `<option value='No' ${(newRecordArr[i].Response_Option.display_value === 'No') ? 'selected' : (newRecordArr[i].Response_Option1 === 'No') ? 'selected' : ''}>No</option>` : "";
-    
-                        select_tag += task_choices.includes("Alignment correct") ? `<option value='Alignment correct' ${(newRecordArr[i].Response_Option.display_value == 'Alignment correct' || newRecordArr[i].Response_Option1 === "Alignment correct") ? 'selected' : ''}>Alignment correct</option>` : "";
-                        select_tag += task_choices.includes("Leakage found") ? `<option value='Leakage found' ${(newRecordArr[i].Response_Option.display_value == 'Leakage found' || newRecordArr[i].Response_Option1 === "Leakage found") ? 'selected' : ''}>Leakage found</option>` : "";
-                        select_tag += task_choices.includes("Damage") ? `<option value='Damage' ${(newRecordArr[i].Response_Option.display_value == 'Damage' || newRecordArr[i].Response_Option1 === "Damage") ? 'selected' : ''}>Damage</option>` : "";
-                        select_tag += task_choices.includes("No provision") ? `<option value='No provision' ${(newRecordArr[i].Response_Option.display_value == 'No provision' || newRecordArr[i].Response_Option1 === "No provision") ? 'selected' : ''}>No provision</option>` : "";
-                        select_tag += task_choices.includes("Idle") ? `<option value='Idle' ${(newRecordArr[i].Response_Option.display_value == 'Idle' || newRecordArr[i].Response_Option1 === "Idle") ? 'selected' : ''}>Idle</option>` : "";
-                        select_tag += task_choices.includes("Electrical") ? `<option value='Electrical' ${(newRecordArr[i].Response_Option.display_value == 'Electrical' || newRecordArr[i].Response_Option1 === "Electrical") ? 'selected' : ''}>Electrical</option>` : "";
-                        select_tag += task_choices.includes("Alignment done") ? `<option value='Alignment done' ${(newRecordArr[i].Response_Option.display_value == 'Alignment done' || newRecordArr[i].Response_Option1 === "Alignment done") ? 'selected' : ''}>Alignment done</option>` : "";
-                        select_tag += task_choices.includes("Rotating and valves closed") ? `<option value='Rotating and valves closed' ${(newRecordArr[i].Response_Option.display_value == 'Rotating and valves closed' || newRecordArr[i].Response_Option1 === "Rotating and valves closed") ? 'selected' : ''}>Rotating and valves closed</option>` : "";
-                        select_tag += task_choices.includes("Safety") ? `<option value='Safety' ${(newRecordArr[i].Response_Option.display_value == 'Safety' || newRecordArr[i].Response_Option1 === "Safety") ? 'selected' : ''}>Safety</option>` : "";
-                        select_tag += task_choices.includes("Already aligned") ? `<option value='Already aligned' ${(newRecordArr[i].Response_Option.display_value == 'Already aligned' || newRecordArr[i].Response_Option1 === "Already aligned") ? 'selected' : ''}>Already aligned</option>` : "";
-                        select_tag += task_choices.includes("Cleaned") ? `<option value='Cleaned' ${(newRecordArr[i].Response_Option.display_value == 'Cleaned' || newRecordArr[i].Response_Option1 === "Cleaned") ? 'selected' : ''}>Cleaned</option>` : "";
-                        select_tag += task_choices.includes("Okay") ? `<option value='Okay' ${(newRecordArr[i].Response_Option.display_value == 'Okay' || newRecordArr[i].Response_Option1 === "Okay") ? 'selected' : ''}>Okay</option>` : "";
-                        select_tag += task_choices.includes("Already clean") ? `<option value='Already clean' ${(newRecordArr[i].Response_Option.display_value == 'Already clean' || newRecordArr[i].Response_Option1 === "Already clean") ? 'selected' : ''}>Already clean</option>` : "";
-                        select_tag += task_choices.includes("Not Okay") ? `<option value='Not Okay' ${(newRecordArr[i].Response_Option.display_value == 'Not Okay' || newRecordArr[i].Response_Option1 === "Not Okay") ? 'selected' : ''}>Not Okay</option>` : "";
-                        select_tag += task_choices.includes("Sealed") ? `<option value='Sealed' ${(newRecordArr[i].Response_Option.display_value == 'Sealed' || newRecordArr[i].Response_Option1 === "Sealed") ? 'selected' : ''}>Sealed</option>` : "";
-                        select_tag += task_choices.includes("Insulation damaged") ? `<option value='Insulation damaged' ${(newRecordArr[i].Response_Option.display_value == 'Insulation damaged' || newRecordArr[i].Response_Option1 === "Insulation damaged") ? 'selected' : ''}>Insulation damaged</option>` : "";
-                        select_tag += task_choices.includes("Done") ? `<option value='Done' ${(newRecordArr[i].Response_Option.display_value == 'Done' || newRecordArr[i].Response_Option1 === "Done") ? 'selected' : ''}>Done</option>` : "";
-                        select_tag += task_choices.includes("No leakage found") ? `<option value='No leakage found' ${(newRecordArr[i].Response_Option.display_value == 'No leakage found' || newRecordArr[i].Response_Option1 === "No leakage found") ? 'selected' : ''}>No leakage found</option>` : "";
-                        select_tag += task_choices.includes("Tightened") ? `<option value='Tightened' ${(newRecordArr[i].Response_Option.display_value == 'Tightened' || newRecordArr[i].Response_Option1 === "Tightened") ? 'selected' : ''}>Tightened</option>` : "";
-                        select_tag += task_choices.includes("Not Done") ? `<option value='Not Done' ${(newRecordArr[i].Response_Option.display_value == 'Not Done' || newRecordArr[i].Response_Option1 === "Not Done") ? 'selected' : ''}>Not Done</option>` : "";
-                        select_tag += task_choices.includes("Working") ? `<option value='Working' ${(newRecordArr[i].Response_Option.display_value == 'Working' || newRecordArr[i].Response_Option1 === "Working") ? 'selected' : ''}>Working</option>` : "";
-                        select_tag += task_choices.includes("Already tightened") ? `<option value='Already tightened' ${(newRecordArr[i].Response_Option.display_value == 'Already tightened' || newRecordArr[i].Response_Option1 === "Already tightened") ? 'selected' : ''}>Already tightened</option>` : "";
-                        select_tag += task_choices.includes("Not working") ? `<option value='Not working' ${(newRecordArr[i].Response_Option.display_value == 'Not working' || newRecordArr[i].Response_Option1 === "Not working") ? 'selected' : ''}>Not working</option>` : "";
-                        select_tag += task_choices.includes("Sufficient") ? `<option value='Sufficient' ${(newRecordArr[i].Response_Option.display_value == 'Sufficient' || newRecordArr[i].Response_Option1 === "Sufficient") ? 'selected' : ''}>Sufficient</option>` : "";
-                        select_tag += task_choices.includes("Belt replaced") ? `<option value='Belt replaced' ${(newRecordArr[i].Response_Option.display_value == 'Belt replaced' || newRecordArr[i].Response_Option1 === "Belt replaced") ? 'selected' : ''}>Belt replaced</option>` : "";
-                        select_tag += task_choices.includes("Low") ? `<option value='Low' ${(newRecordArr[i].Response_Option.display_value == 'Low' || newRecordArr[i].Response_Option1 === "Low") ? 'selected' : ''}>Low</option>` : "";
-                        select_tag += task_choices.includes("No damage found") ? `<option value='No damage found' ${(newRecordArr[i].Response_Option.display_value == 'No damage found' || newRecordArr[i].Response_Option1 === "No damage found") ? 'selected' : ''}>No damage found</option>` : "";
-                        select_tag += task_choices.includes("Silt observed") ? `<option value='Silt observed' ${(newRecordArr[i].Response_Option.display_value == 'Silt observed' || newRecordArr[i].Response_Option1 === "Silt observed") ? 'selected' : ''}>Silt observed</option>` : "";
-                        select_tag += task_choices.includes("Slippage Observed and Adjusted") ? `<option value='Slippage Observed and Adjusted' ${(newRecordArr[i].Response_Option.display_value == 'Slippage Observed and Adjusted' || newRecordArr[i].Response_Option1 === "Slippage Observed and Adjusted") ? 'selected' : ''}>Slippage Observed and Adjusted</option>` : "";
-                        select_tag += task_choices.includes("No silt observed") ? `<option value='No silt observed' ${(newRecordArr[i].Response_Option.display_value == 'No silt observed' || newRecordArr[i].Response_Option1 === "No silt observed") ? 'selected' : ''}>No silt observed</option>` : "";
-                        select_tag += task_choices.includes("No Slippage observed") ? `<option value='No Slippage observed' ${(newRecordArr[i].Response_Option.display_value == 'No Slippage observed' || newRecordArr[i].Response_Option1 === "No Slippage observed") ? 'selected' : ''}>No Slippage observed</option>` : "";
-                        select_tag += task_choices.includes("Alignment") ? `<option value='Alignment' ${(newRecordArr[i].Response_Option.display_value == 'Alignment' || newRecordArr[i].Response_Option1 === "Alignment") ? 'selected' : ''}>Alignment</option>` : "";
-                        select_tag += task_choices.includes("Switch working") ? `<option value='Switch working' ${(newRecordArr[i].Response_Option.display_value == 'Switch working' || newRecordArr[i].Response_Option1 === "Switch working") ? 'selected' : ''}>Switch working</option>` : "";
-                        select_tag += task_choices.includes("Any vibration found") ? `<option value='Any vibration found' ${(newRecordArr[i].Response_Option.display_value == 'Any vibration found' || newRecordArr[i].Response_Option1 === "Any vibration found") ? 'selected' : ''}>Any vibration found</option>` : "";
+                        const choice_config  = {
+                            appName : "smart-joules-app",
+                            reportName : "All_Maintanance_Task_Db",
+                            criteria : `Single_Line != "Yes" && Single_Line != "No"`
+                        }
+                        
+                        const getChoice = await ZOHO.CREATOR.API.getAllRecords(choice_config);
+                        let all_choice = getChoice.data;
+                        all_choice = [...new Set(all_choice)];
+                        for (let l = 0; l < all_choice.length; l++) {
+                            select_tag += task_choices.includes(all_choice[l].Single_Line) ? `<option value='${all_choice[l].Single_Line}' ${(newRecordArr[i].Response_Option.display_value == all_choice[l].Single_Line || newRecordArr[i].Response_Option1 === all_choice[l].Single_Line) ? 'selected' : ''}>${all_choice[l].Single_Line}</option>` : "";
+                        }
                         select_tag += `</select></td>`;
                         const num_input = `<td id='resp-opt${k}'><input type='number' id='input-reponse${k}' value='${newRecordArr[i].Response_Amount}' class='form-control'></td>`;
                         const text_input = `<td id='resp-opt${k}'><input type='text' id='input-reponse${k}' value='${newRecordArr[i].Response_Text}' class='form-control'></td>`;
                         const response_options = newRecordArr[i].Field_Type.display_value;
                         const resp_type = (response_options == "Multiple Choice" || response_options == "Expense" || response_options == "Consumption") ? select_tag : (response_options == "Number" || response_options == "Meter Reading") ? num_input : (response_options == "Text") ? text_input : "";
                         tr_data = tr_data + resp_type;
-                        tr_data += `<td><div class='d-flex'><div class="image-field border border-secondary rounded d-flex justify-content-around align-items-center">
+                        tr_data += `<td><div class='d-flex align-items-top'><div class="image-field border border-secondary rounded d-flex justify-content-around align-items-center">
                             <div class="upload text-center cursor-pointer"><label for="img${k}" class="cursor-pointer"><i class="bi bi-image"></i></label><input type="file" id="img${k}" accept="image/*" class="d-none"></div>
                             <div class="capture h-100 text-center cursor-pointer">
                             <label data-bs-toggle="modal" data-bs-target="#capture${k}" class="cursor-pointer"><i class="bi bi-camera-fill cam-open"></i></label>
@@ -165,7 +142,7 @@ ZOHO.CREATOR.init()
                                    </div>
                                    <div class="modal-body">
                                    <div class="capture-camera">
-                               <video id="video${k}" class="vid" index="${k}" playsinline autoplay>Video stream not available.</video>
+                               <video id="video${k}" class="vid" vidid="${newRecordArr[i].ID}" index="${k}" playsinline autoplay>Video stream not available.</video>
                              </div>
                                    </div>
                                    <div class="modal-footer">
@@ -180,9 +157,10 @@ ZOHO.CREATOR.init()
                              </div>
                             </div>
                             <div class="capture h-100 cursor-pointer"><label class="cursor-pointer h-100 d-flex align-items-center" id="clear-file${k}" style="font-size: 10px;"><i class="bi bi-x-square-fill"></i></label></div>
-                        </div>${newRecordArr[i].Image_Mandatory == "false" ? `` : `<span class="text-danger fw-bold px-1">*</span>`}</div></td>`;
+                        </div>${newRecordArr[i].Image_Mandatory == "false" ? `` : `<span class="text-danger fw-bold px-1">*</span>`}</div>
+                        <div style='font-size: 8px;'>Maximum 5MB</div></td>`;
                         tr_data += `<td><input type='checkbox' id='flag${k}' ${newRecordArr[i].Flags_For_Review == 'true' ? 'checked' : ''} class='form-check-input'></td>`;
-                        tr_data += `<td><input type='text' id='remark${k}' class='form-control'></td>`;
+                        tr_data += `<td><input type='text' value="${newRecordArr[i].Remarks}" id='remark${k}' class='form-control'></td>`;
                         const img_url = newRecordArr[i].Image ? `https://creatorapp.zohopublic.in${newRecordArr[i].Image}`.replace("api", "publishapi") + `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V` : ``;
                         tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${k}'></td>`;
                         tr_data += `<td class='d-none'>${newRecordArr[i].ID}</td>`;
@@ -225,12 +203,35 @@ ZOHO.CREATOR.init()
                             })
                         }
 
-                        document.querySelector(`#clear-file${k}`).addEventListener("click", function () {
+                        document.querySelector(`#clear-file${k}`).addEventListener("click",  async() => {
                             img_obj.value = '';
                             img_tag.src = '';
+
+                            formData = {
+                                "data" : {
+                                    "Image" : ""
+                                }
+                            }
+
+                            const config = {
+                                appName : "smart-joules-app",
+                                reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                                id: newRecordArr[i].ID,
+                                data: formData
+                            }
+                            try{
+                                const resp = await ZOHO.CREATOR.API.updateRecord(config);
+                                console.log(resp);
+                            }
+                            catch(err)
+                            {
+                                console.log(err);
+                            }
+
+                        
                         })
 
-                        img_obj.addEventListener("change", function () {
+                        img_obj.addEventListener("change",  async() => {
                             const file = img_obj.files[0];
                             if (file) {
                                 const image_url = URL.createObjectURL(file);
@@ -238,6 +239,23 @@ ZOHO.CREATOR.init()
                                 img_capture_obj.value = '';
                                 img_capture_obj.src = '';
                                 console.log(img_tag.src);
+
+                                const config = {
+                                    appName : "smart-joules-app",
+                                    reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                                    id: newRecordArr[i].ID,
+                                    fieldName: "Image",
+                                    file: file
+                                }
+                                try{
+                                    const resp = await ZOHO.CREATOR.API.uploadFile(config);
+                                    console.log(resp);
+                                }
+                                catch(err)
+                                {
+                                    console.log(err);
+                                }
+                                
                             }
                         })
 
@@ -250,6 +268,137 @@ ZOHO.CREATOR.init()
                                 img_obj.src = '';
                             }
                         })
+                        
+                        document.querySelector(`#remark${k}`).addEventListener("change",async (e)=> {
+                            formData = {
+                                "data" : {
+                                    "Remarks" : e.target.value ? e.target.value : ""
+                                }
+                            }
+
+                            const config = {
+                                appName : "smart-joules-app",
+                                reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                                id : newRecordArr[i].ID,
+                                data : formData
+                            }
+                            try{
+                                const response = await ZOHO.CREATOR.API.updateRecord(config);
+                                console.log(response);
+                            }
+                            catch(err){
+                                console.log(err);
+                            }
+                            
+                        })
+                        document.querySelector(`#flag${k}`).addEventListener("change",async(e)=>{
+                            formData = {
+                                "data" : {
+                                    "Flags_For_Review" : e.target.checked
+                                }
+                            }
+                            const config = {
+                                appName: "smart-joules-app",
+                                reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                                id: newRecordArr[i].ID,
+                                data: formData
+                            }
+                            try {
+                                const resp = await ZOHO.CREATOR.API.updateRecord(config);
+                                console.log(resp);
+                            }
+                            catch (err) {
+                                console.log(err);
+                            }
+                        })
+
+                        if (response_options == "Multiple Choice" || response_options == "Consumption" || response_options == "Expense") {
+                            document.querySelector(`#resp-opt${k}`).addEventListener("change", async e => {
+                                const response = e.target.value;
+                                if (response) {
+                                    const choiceConfig = {
+                                        appName: "smart-joules-app",
+                                        reportName: "All_Maintanance_Task_Db",
+                                        criteria: `Single_Line == "${response}"`
+                                    };
+
+                                    const choicePromise = await ZOHO.CREATOR.API.getAllRecords(choiceConfig)
+                                    const choiceId = choicePromise.data[0].ID;
+                                    formData = {
+                                        "data": {
+                                            "Response_Option": response === "null" ? null : choiceId,
+                                            "Response_Value": response === "null" ? "" : e.target.value,
+                                            
+                                        }
+                                    }
+                                    const config = {
+                                        appName: "smart-joules-app",
+                                        reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                                        id: newRecordArr[i].ID,
+                                        data: formData
+                                    }
+                                    try {
+                                        const resp = await ZOHO.CREATOR.API.updateRecord(config);
+                                        console.log(resp);
+                                    }
+                                    catch (err) {
+                                        console.log(err);
+                                    }
+                                }
+                            })
+                        }
+                        else if (response_options == "Number" || response_options == "Meter Reading") {
+                            document.querySelector(`#resp-opt${k}`).addEventListener("change", async e => {
+                                const response = e.target.value;
+                                if (response) {
+                                    formData = {
+                                        "data": {
+                                            "Response_Amount": response === "null" ? null : e.target.value,
+                                            "Response_Value": response === "null" ? "" : e.target.value,
+                                        }
+                                    }
+                                    const config = {
+                                        appName: "smart-joules-app",
+                                        reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                                        id: newRecordArr[i].ID,
+                                        data: formData
+                                    }
+                                    try {
+                                        const resp = await ZOHO.CREATOR.API.updateRecord(config);
+                                        console.log(resp);
+                                    }
+                                    catch (err) {
+                                        console.log(err);
+                                    }
+                                }
+                            })
+                        }
+                        else if (response_options === "Text") {
+                            document.querySelector(`#resp-opt${k}`).addEventListener("change", async e => {
+                                const response = e.target.value;
+                                if (response) {
+                                    formData = {
+                                        "data": {
+                                            "Response_Text": response === "null" ? "" : e.target.value,
+                                            "Response_Value": response === "null" ? "" : e.target.value
+                                        }
+                                    }
+                                    const config = {
+                                        appName: "smart-joules-app",
+                                        reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                                        id: newRecordArr[i].ID,
+                                        data: formData
+                                    }
+                                    try {
+                                        const resp = await ZOHO.CREATOR.API.updateRecord(config);
+                                        console.log(resp);
+                                    }
+                                    catch (err) {
+                                        console.log(err);
+                                    }
+                                }
+                            })
+                        }
                     }
 
                 }
@@ -332,8 +481,8 @@ ZOHO.CREATOR.init()
                 if (data.Flag_Choices) {
                     return data.Flag_Choices.map(choice => choice.display_value);
                 }
-                else{
-                    return[];
+                else {
+                    return [];
                 }
             } catch (err) {
                 console.error('Error fetching flag choices:', err, id);
@@ -350,7 +499,7 @@ ZOHO.CREATOR.init()
                 if (!responseElement || !responseElement.value) continue;
                 const response = responseElement.value;
                 const flagChoices = await getFlagChoices(row.children[9].textContent);
-                const flagResp = document.querySelector(`#flag${i}`).checked ? "true" : flagChoices.includes(response)? "true" : "false";
+                const flagResp = document.querySelector(`#flag${i}`).checked ? "true" : flagChoices.includes(response) ? "true" : "false";
                 console.log(flagResp);
                 const respOption = document.querySelector(`#response-type${i}`).textContent;
                 const remarkOutput = document.querySelector(`#remark${i}`).value || "";
@@ -517,7 +666,7 @@ ZOHO.CREATOR.init()
             }
         });
 
-        const captureImage = (video, canvas) => {
+        const captureImage = async (video, canvas) => {
             if (!metadataLoaded) {
                 console.error('Video metadata is not yet loaded.');
                 return;
@@ -535,6 +684,22 @@ ZOHO.CREATOR.init()
             dataTransfer.items.add(imageFile);
             const image_field = document.querySelector(`#img-capture${index_no}`);
             image_field.files = dataTransfer.files;
+            const recID = video.getAttribute("vidid");
+            const config = {
+                appName : "smart-joules-app",
+                reportName: "All_Maintenance_Scheduler_Task_List_Records",
+                id: recID,
+                fieldName: "Image",
+                file: image_field.files[0]
+            }
+            try{
+                const resp = await ZOHO.CREATOR.API.uploadFile(config);
+                console.log(resp);
+            }
+            catch(err)
+            {
+                console.log(err);
+            }
         };
 
 
@@ -714,9 +879,6 @@ ZOHO.CREATOR.init()
                 try {
                     const addRecords = await addRecord();
                     console.log("Records Added:", addRecords);
-
-                    const addImageResponse = await addImage();
-                    console.log("Image Added:", addImageResponse);
 
                     const addedUser = await submittedUser();
                     console.log("User Submitted:", addedUser);
