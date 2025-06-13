@@ -109,14 +109,14 @@ ZOHO.CREATOR.init().then(function (data) {
                 "api",
                 "publishapi"
               ) +
-              `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V`
+              `&privatelink=2W361xtEeUYvSCpz9OvhZNQQdfszJ5VzM9CDDdBA45uA6ZvZBjAugkemTskwKuqGYbyOUXRqAFwj0q1wSRnGmy3GYpgdPxXavS87`
             : "";
           const video_file = newRecordArr[i].Video
             ? `https://creatorapp.zohopublic.in${newRecordArr[i].Video}`.replace(
                 "api",
                 "publishapi"
               ) +
-              `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V`
+              `&privatelink=2W361xtEeUYvSCpz9OvhZNQQdfszJ5VzM9CDDdBA45uA6ZvZBjAugkemTskwKuqGYbyOUXRqAFwj0q1wSRnGmy3GYpgdPxXavS87`
             : "";
           let tr_data = `<td>${s_no}
                         <audio class="d-none" id="audioPlayer${k}" controls>
@@ -245,7 +245,7 @@ ZOHO.CREATOR.init().then(function (data) {
                 "api",
                 "publishapi"
               ) +
-              `&privatelink=q52rRrGjs3HzqO2GjTB28AvBeqgmKVMkma5HDOUxYwpq1Km45hJaRHn3q6Bukj4m0C1Zgq2gM1xg4wFKvrez60A7x2C7aMFxbO3V`
+              `&privatelink=2W361xtEeUYvSCpz9OvhZNQQdfszJ5VzM9CDDdBA45uA6ZvZBjAugkemTskwKuqGYbyOUXRqAFwj0q1wSRnGmy3GYpgdPxXavS87`
             : ``;
           tr_data += `<td><img src='${img_url}' class='img-tag object-fit-contain rounded border' id='img_prev${k}'></td>`;
           tr_data += `<td class='d-none'>${newRecordArr[i].ID}</td>`;
